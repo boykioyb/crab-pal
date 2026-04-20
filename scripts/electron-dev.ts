@@ -64,7 +64,7 @@ async function ensureBundledUvForCurrentPlatform(): Promise<void> {
 }
 
 // Multi-instance detection (matches detect-instance.sh logic)
-// Detects instance number from folder name suffix (e.g., craft-agents-1 → instance 1)
+// Detects instance number from folder name suffix (e.g., crabpal-1 → instance 1)
 function detectInstance(): void {
   // Don't override if already set (e.g., by sourcing detect-instance.sh first)
   if (process.env.CRAB_PAL_VITE_PORT) return;
@@ -76,9 +76,9 @@ function detectInstance(): void {
     const instanceNum = match[1];
     process.env.CRAB_PAL_INSTANCE_NUMBER = instanceNum;
     process.env.CRAB_PAL_VITE_PORT = `${instanceNum}173`;
-    process.env.CRAB_PAL_APP_NAME = `Craft Agents [${instanceNum}]`;
-    process.env.CRAB_PAL_CONFIG_DIR = join(process.env.HOME || "", `.craft-agent-${instanceNum}`);
-    process.env.CRAB_PAL_DEEPLINK_SCHEME = `craftagents${instanceNum}`;
+    process.env.CRAB_PAL_APP_NAME = `CrabPal [${instanceNum}]`;
+    process.env.CRAB_PAL_CONFIG_DIR = join(process.env.HOME || "", `.crabpal-${instanceNum}`);
+    process.env.CRAB_PAL_DEEPLINK_SCHEME = `crabpal${instanceNum}`;
     console.log(`🔢 Instance ${instanceNum} detected: port=${process.env.CRAB_PAL_VITE_PORT}, config=${process.env.CRAB_PAL_CONFIG_DIR}`);
   }
 }
@@ -256,8 +256,8 @@ function getElectronEnv(): Record<string, string> {
     ...process.env as Record<string, string>,
     VITE_DEV_SERVER_URL: `http://localhost:${vitePort}`,
     CRAB_PAL_CONFIG_DIR: process.env.CRAB_PAL_CONFIG_DIR || "",
-    CRAB_PAL_APP_NAME: process.env.CRAB_PAL_APP_NAME || "Craft Agents",
-    CRAB_PAL_DEEPLINK_SCHEME: process.env.CRAB_PAL_DEEPLINK_SCHEME || "craftagents",
+    CRAB_PAL_APP_NAME: process.env.CRAB_PAL_APP_NAME || "CrabPal",
+    CRAB_PAL_DEEPLINK_SCHEME: process.env.CRAB_PAL_DEEPLINK_SCHEME || "crabpal",
     CRAB_PAL_INSTANCE_NUMBER: process.env.CRAB_PAL_INSTANCE_NUMBER || "",
   };
 }

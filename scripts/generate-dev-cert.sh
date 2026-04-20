@@ -18,7 +18,7 @@ openssl req -x509 \
   -keyout "$OUT_DIR/key.pem" \
   -out "$OUT_DIR/cert.pem" \
   -days 365 -nodes \
-  -subj "/CN=craft-agent-dev" \
+  -subj "/CN=crabpal-dev" \
   2>/dev/null
 
 echo "Generated self-signed TLS certificate:"
