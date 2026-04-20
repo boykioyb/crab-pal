@@ -222,7 +222,7 @@ export function cleanEnv(): Record<string, string> {
 const PAYLOAD_SKIP_KEYS = new Set(['sessionId', 'sessionName', 'workspaceId', 'timestamp']);
 
 /**
- * Build the base CRAFT_* environment variables shared by both prompt and webhook actions.
+ * Build the base CRAB_PAL_* environment variables shared by both prompt and webhook actions.
  * Contains event info, session metadata, scheduler time, and payload fields (unsanitized).
  */
 function buildBaseEventEnv(event: AutomationEvent, payload: BaseEventPayload): Record<string, string> {
@@ -257,23 +257,7 @@ function buildBaseEventEnv(event: AutomationEvent, payload: BaseEventPayload): R
     env[envKey] = typeof value === 'string' ? value : String(value);
   }
 
-  // Backward-compat: mirror every CRAB_PAL_* into CRAFT_* so pre-rename prompt
-  // templates (e.g. `$CRAFT_LABEL`) keep expanding correctly.
-  mirrorCrabPalToCraft(env);
-
   return env;
-}
-
-/**
- * Add CRAFT_FOO aliases for every CRAB_PAL_FOO key in `env` (non-destructive —
- * skips if the CRAFT_ alias is already set).
- */
-function mirrorCrabPalToCraft(env: Record<string, string>): void {
-  for (const key of Object.keys(env)) {
-    if (!key.startsWith('CRAB_PAL_')) continue;
-    const legacyKey = 'CRAFT_' + key.slice('CRAB_PAL_'.length);
-    if (env[legacyKey] === undefined) env[legacyKey] = env[key]!;
-  }
 }
 
 /**
@@ -294,8 +278,6 @@ export function buildEnvFromPayload(event: AutomationEvent, payload: BaseEventPa
     env[envKey] = typeof value === 'string' ? sanitizeForShell(value) : String(value);
   }
 
-  mirrorCrabPalToCraft(env);
-
   return env;
 }
 
@@ -306,7 +288,7 @@ export function buildEnvFromPayload(event: AutomationEvent, payload: BaseEventPa
  * - Does NOT spread process.env (no secret leakage)
  * - Does NOT apply shell sanitization (irrelevant for HTTP context)
  * - Only injects CRAB_PAL_WH_* user-defined vars from process.env (webhook secrets)
- * - Includes CRAFT_* system vars derived from the event payload
+ * - Includes CRAB_PAL_* system vars derived from the event payload
  *
  * Users set webhook secrets in their shell profile:
  *   export CRAB_PAL_WH_SLACK_URL="https://hooks.slack.com/services/T.../B.../xxx"
@@ -319,16 +301,10 @@ export function buildEnvFromPayload(event: AutomationEvent, payload: BaseEventPa
 export function buildWebhookEnv(event: AutomationEvent, payload: BaseEventPayload): Record<string, string> {
   const env = buildBaseEventEnv(event, payload);
 
-  // User-defined webhook secrets: CRAB_PAL_WH_* from process.env,
-  // with backward-compat for legacy CRAFT_WH_* names.
+  // User-defined webhook secrets: only CRAB_PAL_WH_* from process.env
   for (const [key, value] of Object.entries(process.env)) {
-    if (value === undefined) continue;
-    if (key.startsWith('CRAB_PAL_WH_')) {
+    if (key.startsWith('CRAB_PAL_WH_') && value !== undefined) {
       env[key] = value;
-    } else if (key.startsWith('CRAFT_WH_')) {
-      env[key] = value;
-      const newKey = 'CRAB_PAL_WH_' + key.slice('CRAFT_WH_'.length);
-      if (env[newKey] === undefined) env[newKey] = value;
     }
   }
 

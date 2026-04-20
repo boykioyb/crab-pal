@@ -209,13 +209,13 @@ The `auth` field is applied before custom `headers`, so you can override the gen
 
 **Variable expansion:** The `url`, `headers` values, `body`, and `auth` fields all support `$VAR` and `${VAR}` syntax for environment variable expansion. See [Environment Variables](#environment-variables) below.
 
-**Security:** Webhook actions only have access to `CRAFT_*` system variables and `CRAB_PAL_WH_*` user-defined secrets. They do **not** have access to your full system environment (e.g., `$HOME`, `$PATH`, or other process variables).
+**Security:** Webhook actions only have access to `CRAB_PAL_*` system variables and `CRAB_PAL_WH_*` user-defined secrets. They do **not** have access to your full system environment (e.g., `$HOME`, `$PATH`, or other process variables).
 
 ## Environment Variables
 
 Both prompt and webhook actions support variable expansion using `$VAR` or `${VAR}` syntax.
 
-### System Variables (CRAFT_*)
+### System Variables (CRAB_PAL_*)
 
 These are automatically set by the automation system based on the triggering event:
 

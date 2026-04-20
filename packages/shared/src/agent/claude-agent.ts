@@ -2697,15 +2697,3 @@ This is a branched conversation. All prior messages in this conversation are par
 
   // ============================================================
 }
-
-// ============================================================
-// Backward Compatibility Exports
-// ============================================================
-// Legacy alias for backward compatibility
-// Once all consumers are updated, these can be removed.
-
-/** @deprecated Legacy alias for backward compatibility. Use ClaudeAgent instead. */
-export { ClaudeAgent as CraftAgent };
-
-/** @deprecated Legacy alias for backward compatibility. Use ClaudeAgentConfig instead. */
-export type { ClaudeAgentConfig as CraftAgentConfig };

@@ -33,9 +33,6 @@ import {
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { isDeveloperFeedbackEnabled } from '@crabpal/shared/feature-flags';
-import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env';
-
-applyLegacyCraftEnv();
 // Import from session-tools-core
 import {
   type SessionToolContext,

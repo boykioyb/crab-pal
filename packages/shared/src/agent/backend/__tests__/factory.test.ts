@@ -11,7 +11,6 @@ import { describe, it, expect, beforeEach } from 'bun:test';
 import { join } from 'node:path';
 import {
   detectProvider,
-  createBackend,
   createAgent,
   fetchBackendModels,
   getAvailableProviders,
@@ -83,11 +82,11 @@ describe('detectProvider', () => {
   });
 });
 
-describe('createBackend / createAgent', () => {
+describe('createAgent', () => {
   describe('Anthropic provider', () => {
     it('should create ClaudeAgent for anthropic provider', () => {
       const config = createTestConfig({ provider: 'anthropic' });
-      const agent = createBackend(config);
+      const agent = createAgent(config);
 
       expect(agent).toBeInstanceOf(ClaudeAgent);
     });
@@ -96,7 +95,7 @@ describe('createBackend / createAgent', () => {
   describe('Pi provider', () => {
     it('should create PiAgent for pi provider', () => {
       const config = createTestConfig({ provider: 'pi' });
-      const agent = createBackend(config);
+      const agent = createAgent(config);
 
       expect(agent).toBeInstanceOf(PiAgent);
     });
@@ -106,13 +105,7 @@ describe('createBackend / createAgent', () => {
     it('should throw for unknown provider', () => {
       const config = createTestConfig({ provider: 'unknown' as any });
 
-      expect(() => createBackend(config)).toThrow('Unknown provider: unknown');
-    });
-  });
-
-  describe('createAgent alias', () => {
-    it('should be an alias for createBackend', () => {
-      expect(createAgent).toBe(createBackend);
+      expect(() => createAgent(config)).toThrow('Unknown provider: unknown');
     });
   });
 });
@@ -342,7 +335,7 @@ describe('phase4 backend abstraction APIs', () => {
 
 describe('ClaudeAgent model switching', () => {
   it('setModel updates getModel (regression: setModel used to write config.model but getModel reads _model)', () => {
-    const agent = createBackend(createTestConfig({ provider: 'anthropic', model: 'claude-opus-4-6' }));
+    const agent = createAgent(createTestConfig({ provider: 'anthropic', model: 'claude-opus-4-6' }));
 
     expect(agent.getModel()).toBe('claude-opus-4-6');
 

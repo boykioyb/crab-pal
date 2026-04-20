@@ -116,20 +116,20 @@ export function detectProvider(authType: string): AgentProvider {
  * @example
  * ```typescript
  * // Create Anthropic (Claude) backend
- * const backend = createBackend({
+ * const backend = createAgent({
  *   provider: 'anthropic',
  *   workspace: myWorkspace,
  *   model: 'claude-sonnet-4-6',
  * });
  *
  * // Create Codex backend (uses app-server mode)
- * const codexBackend = createBackend({
+ * const codexBackend = createAgent({
  *   provider: 'openai',
  *   workspace: myWorkspace,
  * });
  * ```
  */
-export function createBackend(config: BackendConfig): AgentBackend {
+export function createAgent(config: BackendConfig): AgentBackend {
   switch (config.provider) {
     case 'anthropic':
       // ClaudeAgent implements AgentBackend directly
@@ -144,12 +144,6 @@ export function createBackend(config: BackendConfig): AgentBackend {
       throw new Error(`Unknown provider: ${config.provider}`);
   }
 }
-
-/**
- * Create the appropriate agent based on configuration.
- * Alias for createBackend - prefer this name for new code.
- */
-export const createAgent = createBackend;
 
 /**
  * Create backend from a pre-resolved context and provider-agnostic core config.
@@ -185,7 +179,7 @@ export function createBackendFromResolvedContext(args: {
     runtime,
   };
 
-  return createBackend(config);
+  return createAgent(config);
 }
 
 /**
@@ -496,7 +490,7 @@ export async function validateStoredBackendConnection(args: {
  *
  * @param connection - The LLM connection config
  * @param baseConfig - Base backend config (workspace, session, etc.)
- * @returns Complete BackendConfig ready for createBackend()
+ * @returns Complete BackendConfig ready for createAgent()
  */
 export function createConfigFromConnection(
   connection: LlmConnection,
@@ -571,7 +565,7 @@ export function createBackendFromConnection(
     ...baseConfig,
     model: context.resolvedModel,
   });
-  return createBackend(config);
+  return createAgent(config);
 }
 
 // ============================================================

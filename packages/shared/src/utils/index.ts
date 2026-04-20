@@ -1,5 +1,4 @@
 export * from './debug.ts';
-export * from './legacy-env.ts';
 export * from './files.ts';
 export * from './open-url.ts';
 export * from './cli-icon-resolver.ts';

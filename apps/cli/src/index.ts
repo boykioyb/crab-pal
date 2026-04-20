@@ -9,9 +9,6 @@
 
 import { resolve } from 'path'
 import { CliRpcClient } from './client.ts'
-import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env'
-
-applyLegacyCraftEnv()
 
 // ---------------------------------------------------------------------------
 // Arg parsing

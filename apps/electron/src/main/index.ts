@@ -3,9 +3,6 @@
 import { loadShellEnv } from './shell-env'
 loadShellEnv()
 
-import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env'
-applyLegacyCraftEnv()
-
 import { app, BrowserWindow, dialog, ipcMain, nativeImage, nativeTheme, shell } from 'electron'
 import { createHash, randomUUID } from 'crypto'
 import { hostname, homedir } from 'os'

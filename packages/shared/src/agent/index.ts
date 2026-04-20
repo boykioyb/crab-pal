@@ -1,4 +1,3 @@
-// Export ClaudeAgent (renamed from CraftAgent) and backward-compatible aliases
 export * from './claude-agent.ts';
 export * from './conversation-summary.ts';
 
@@ -128,8 +127,7 @@ export {
 // Export backend abstraction - unified interface for AI agents
 // This module enables switching between Claude (Anthropic) and Pi agents
 export {
-  // Factory (createAgent is the preferred name, createBackend is kept for backward compat)
-  createBackend,
+  // Factory
   createAgent,
   detectProvider,
   getAvailableProviders,

@@ -80,7 +80,7 @@ Last updated: 2026-04-16
 ### Technical Cleanup
 
 - [ ] Audit remaining runtime uses of hardcoded `~/.crabpal` paths and decide which should use shared `CONFIG_DIR` dynamically
-- [ ] Review compatibility env handling and decide whether to retire old `CRAFT_*` fallbacks in a later cleanup pass
+- [x] Retire legacy `CRAFT_*` env fallbacks
 - [ ] Add/expand renderer tests around the new shell layout where valuable
 - [ ] Rebuild any platform-specific generated assets that still depend on missing local tooling
 

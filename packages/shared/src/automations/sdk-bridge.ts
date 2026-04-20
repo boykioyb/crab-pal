@@ -1,7 +1,7 @@
 /**
  * SDK Bridge - Environment variable building for Claude SDK automation integration
  *
- * Maps SDK automation input fields to CRAFT_* environment variables for command execution.
+ * Maps SDK automation input fields to CRAB_PAL_* environment variables for command execution.
  */
 
 import { sanitizeForShell } from './security.ts';
@@ -10,7 +10,7 @@ import type { AgentEvent, SdkAutomationInput } from './types.ts';
 
 /**
  * Build environment variables from SDK automation input.
- * Maps SDK input fields to CRAFT_* environment variables.
+ * Maps SDK input fields to CRAB_PAL_* environment variables.
  */
 export function buildEnvFromSdkInput(event: AgentEvent, input: SdkAutomationInput): Record<string, string> {
   const env: Record<string, string> = {

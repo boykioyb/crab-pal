@@ -132,7 +132,7 @@ function validatePackagedEnvRuntime(command: string, label: string): string {
   if (!isAbsolute(command) && !hasPathSeparator) {
     throw new Error(
       `${label} runtime from env is not an absolute/bundled path (${command}). ` +
-      'Packaged builds do not allow PATH-based runtime resolution. Configure an absolute CRAFT_* path or ship a bundled runtime.'
+      'Packaged builds do not allow PATH-based runtime resolution. Configure an absolute CRAB_PAL_* path or ship a bundled runtime.'
     );
   }
 
@@ -140,7 +140,7 @@ function validatePackagedEnvRuntime(command: string, label: string): string {
   if (!existsSync(resolvedCommand)) {
     throw new Error(
       `${label} runtime from env does not exist: ${resolvedCommand}. ` +
-      'Configure a valid absolute CRAFT_* path or ship a bundled runtime.'
+      'Configure a valid absolute CRAB_PAL_* path or ship a bundled runtime.'
     );
   }
 

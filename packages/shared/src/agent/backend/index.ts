@@ -51,7 +51,6 @@ export { AbortReason } from './types.ts';
 
 // Factory
 export {
-  createBackend,
   createAgent,
   detectProvider,
   getAvailableProviders,
@@ -89,4 +88,4 @@ export { ClaudeEventAdapter } from './claude/event-adapter.ts';
 export { PiEventAdapter } from './pi/event-adapter.ts';
 
 // Agent implementations are imported directly by factory.ts
-// Consumers should use createAgent() / createBackend() instead of concrete classes
+// Consumers should use createAgent() instead of concrete classes

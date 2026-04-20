@@ -18,9 +18,6 @@ import http from 'node:http';
 import { createInterface } from 'node:readline';
 import { join } from 'node:path';
 import { mkdirSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env';
-
-applyLegacyCraftEnv();
 import { homedir } from 'node:os';
 
 // Pi SDK

@@ -27,9 +27,6 @@ import { join } from 'node:path'
 import { readFileSync, existsSync } from 'node:fs'
 import { version as packageVersion } from '../package.json'
 import { enableDebug } from '@crabpal/shared/utils/debug'
-import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env'
-
-applyLegacyCraftEnv()
 import { bootstrapServer, startHealthHttpServer, generateServerToken } from '@crabpal/server-core/bootstrap'
 import { validateSession, createWebuiHandler, nodeHttpAdapter } from '@crabpal/server-core/webui'
 import type { WebuiHandler } from '@crabpal/server-core/webui'
