@@ -53,7 +53,7 @@ export async function createSessionToken(secret: string): Promise<string> {
 // Cookie helpers
 // ---------------------------------------------------------------------------
 
-const SESSION_COOKIE_NAME = 'craft_session'
+const SESSION_COOKIE_NAME = 'crabpal_session'
 
 export function buildSessionCookie(jwt: string, secure: boolean): string {
   const parts = [

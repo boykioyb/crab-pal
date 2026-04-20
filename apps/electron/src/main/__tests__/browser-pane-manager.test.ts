@@ -581,7 +581,7 @@ describe('BrowserPaneManager', () => {
     const instance = (manager as any).instances.get('theme-signal')
     instance.themeObserverToken = 'tok-1'
 
-    instance.pageView.webContents._emit('console-message', 1, '__craft_theme_color__:tok-1:#123456')
+    instance.pageView.webContents._emit('console-message', 1, '__crabpal_theme_color__:tok-1:#123456')
 
     expect(manager.listInstances().find(i => i.id === 'theme-signal')?.themeColor).toBe('#123456')
     expect(manager.getConsoleLogs('theme-signal', { level: 'all', limit: 10 })).toHaveLength(0)
@@ -592,10 +592,10 @@ describe('BrowserPaneManager', () => {
     const instance = (manager as any).instances.get('theme-dedupe')
     instance.themeObserverToken = 'tok-2'
 
-    instance.pageView.webContents._emit('console-message', 1, '__craft_theme_color__:tok-2:#445566')
+    instance.pageView.webContents._emit('console-message', 1, '__crabpal_theme_color__:tok-2:#445566')
     const sendCallsAfterFirst = instance.window.webContents.send.mock.calls.length
 
-    instance.pageView.webContents._emit('console-message', 1, '__craft_theme_color__:tok-2:#445566')
+    instance.pageView.webContents._emit('console-message', 1, '__crabpal_theme_color__:tok-2:#445566')
     const sendCallsAfterSecond = instance.window.webContents.send.mock.calls.length
 
     expect(sendCallsAfterSecond).toBe(sendCallsAfterFirst)
@@ -607,7 +607,7 @@ describe('BrowserPaneManager', () => {
     instance.themeObserverToken = 'tok-current'
     instance.themeColor = '#aaaaaa'
 
-    instance.pageView.webContents._emit('console-message', 1, '__craft_theme_color__:tok-old:#bbccdd')
+    instance.pageView.webContents._emit('console-message', 1, '__crabpal_theme_color__:tok-old:#bbccdd')
 
     expect(manager.listInstances().find(i => i.id === 'theme-stale-token')?.themeColor).toBe('#aaaaaa')
   })
@@ -617,10 +617,10 @@ describe('BrowserPaneManager', () => {
     const instance = (manager as any).instances.get('theme-null')
     instance.themeObserverToken = 'tok-null'
 
-    instance.pageView.webContents._emit('console-message', 1, '__craft_theme_color__:tok-null:#223344')
+    instance.pageView.webContents._emit('console-message', 1, '__crabpal_theme_color__:tok-null:#223344')
     expect(manager.listInstances().find(i => i.id === 'theme-null')?.themeColor).toBe('#223344')
 
-    instance.pageView.webContents._emit('console-message', 1, '__craft_theme_color__:tok-null:__NULL__')
+    instance.pageView.webContents._emit('console-message', 1, '__crabpal_theme_color__:tok-null:__NULL__')
     expect(manager.listInstances().find(i => i.id === 'theme-null')?.themeColor).toBeNull()
   })
 

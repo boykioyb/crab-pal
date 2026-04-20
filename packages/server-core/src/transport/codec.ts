@@ -1,6 +1,6 @@
 import type { MessageEnvelope } from '@crabpal/shared/protocol'
 
-const WIRE_TYPE_KEY = '__craftRpcType'
+const WIRE_TYPE_KEY = '__crabpalRpcType'
 const WIRE_BASE64_KEY = 'base64'
 const UINT8_WIRE_TYPE = 'u8'
 

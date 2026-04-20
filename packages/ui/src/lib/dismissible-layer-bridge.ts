@@ -24,7 +24,7 @@ export interface DismissibleLayerBridge {
   handleEscape: () => boolean
 }
 
-const BRIDGE_KEY = '__craftAgentDismissibleLayerBridge__'
+const BRIDGE_KEY = '__crabpalDismissibleLayerBridge__'
 
 type BridgeHost = typeof globalThis & {
   [BRIDGE_KEY]?: DismissibleLayerBridge | null
