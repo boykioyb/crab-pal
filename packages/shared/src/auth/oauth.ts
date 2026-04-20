@@ -444,9 +444,6 @@ export class CrabPalOAuth {
   }
 }
 
-/** @deprecated Legacy alias for backward compatibility. Use CrabPalOAuth instead. */
-export { CrabPalOAuth as CraftOAuth };
-
 /**
  * Register an MCP OAuth client dynamically.
  * Extracted from CrabPalOAuth.registerClient for reuse in prepareMcpOAuth.
