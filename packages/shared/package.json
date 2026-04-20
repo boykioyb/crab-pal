@@ -9,7 +9,7 @@
   "scripts": {
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "sync:crabpal-bash-patterns": "bun run src/config/sync-craft-agent-bash-patterns.ts"
+    "sync:crabpal-bash-patterns": "bun run src/config/sync-crabpal-bash-patterns.ts"
   },
   "exports": {
     ".": "./src/index.ts",

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Build script for standalone Craft Agent server.
+ * Build script for standalone CrabPal server.
  *
  * Assembles a self-contained distribution directory with all runtime
  * dependencies, resources, and platform-specific binaries.
@@ -81,7 +81,7 @@ interface ServerBuildConfig {
 
 function showHelp(): void {
   console.log(`
-Standalone server build script for Craft Agent
+Standalone server build script for CrabPal
 
 Usage:
   bun run scripts/build-server.ts [options]
@@ -309,7 +309,7 @@ function copyDependencyTree(
 /**
  * Scan all .ts files in a directory tree for import/require statements
  * and return the set of external npm package names (not relative paths,
- * not node: builtins, not workspace @craft-agent/* packages).
+ * not node: builtins, not workspace @crabpal/* packages).
  */
 function scanImports(dir: string): Set<string> {
   const packages = new Set<string>();
@@ -328,7 +328,7 @@ function scanImports(dir: string): Set<string> {
         while ((match = importRe.exec(content)) !== null) {
           const spec = match[1]!;
           // Skip relative imports, node: builtins, workspace packages
-          if (spec.startsWith('.') || spec.startsWith('node:') || spec.startsWith('@craft-agent/')) continue;
+          if (spec.startsWith('.') || spec.startsWith('node:') || spec.startsWith('@crabpal/')) continue;
           // Extract package name (handle scoped: @scope/name)
           const parts = spec.split('/');
           const pkgName = spec.startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0]!;
@@ -509,9 +509,9 @@ function copyWorkspacePackages(config: ServerBuildConfig): void {
 function createRootConfig(config: ServerBuildConfig): void {
   const { outputDir, version } = config;
 
-  // Root package.json with workspaces (Bun resolves @craft-agent/* through this)
+  // Root package.json with workspaces (Bun resolves @crabpal/* through this)
   const rootPkg = {
-    name: 'craft-server-dist',
+    name: 'crabpal-server-dist',
     version,
     private: true,
     workspaces: ['packages/*'],
@@ -525,18 +525,18 @@ function createRootConfig(config: ServerBuildConfig): void {
       module: 'ESNext',
       moduleResolution: 'bundler',
       paths: {
-        '@craft-agent/server-core/*': ['./packages/server-core/src/*'],
-        '@craft-agent/shared/*': ['./packages/shared/src/*'],
-        '@craft-agent/core/*': ['./packages/core/src/*'],
-        '@craft-agent/session-tools-core/*': ['./packages/session-tools-core/src/*'],
+        '@crabpal/server-core/*': ['./packages/server-core/src/*'],
+        '@crabpal/shared/*': ['./packages/shared/src/*'],
+        '@crabpal/core/*': ['./packages/core/src/*'],
+        '@crabpal/session-tools-core/*': ['./packages/session-tools-core/src/*'],
       },
     },
   };
   writeFileSync(join(outputDir, 'tsconfig.json'), JSON.stringify(rootTsconfig, null, 2) + '\n');
 
-  // Create workspace symlinks in node_modules/@craft-agent/
+  // Create workspace symlinks in node_modules/@crabpal/
   // Bun needs these to resolve workspace package imports at runtime
-  const scopeDir = join(outputDir, 'node_modules', '@craft-agent');
+  const scopeDir = join(outputDir, 'node_modules', '@crabpal');
   mkdirSync(scopeDir, { recursive: true });
 
   const packagesDir = join(outputDir, 'packages');
@@ -548,8 +548,8 @@ function createRootConfig(config: ServerBuildConfig): void {
       try {
         const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'));
         const name: string = pkgJson.name || '';
-        if (name.startsWith('@craft-agent/')) {
-          const shortName = name.replace('@craft-agent/', '');
+        if (name.startsWith('@crabpal/')) {
+          const shortName = name.replace('@crabpal/', '');
           const linkPath = join(scopeDir, shortName);
           const target = join('..', '..', 'packages', pkg);
           if (!existsSync(linkPath)) {
@@ -573,8 +573,8 @@ function createEntryScripts(config: ServerBuildConfig): void {
   const binDir = join(outputDir, 'bin');
   mkdirSync(binDir, { recursive: true });
 
-  // bin/craft-server — main entry wrapper
-  const craftServer = `#!/bin/sh
+  // bin/crabpal-server — main entry wrapper
+  const crabpalServer = `#!/bin/sh
 set -e
 
 # Resolve the distribution root
@@ -597,13 +597,13 @@ export PATH="$ROOT/resources/bin:$ROOT/vendor/bun:$PATH"
 # Use bundled Bun runtime
 exec "$ROOT/vendor/bun/bun" run "$ROOT/packages/server/src/index.ts" "$@"
 `;
-  writeFileSync(join(binDir, 'craft-server'), craftServer);
+  writeFileSync(join(binDir, 'crabpal-server'), crabpalServer);
 
   // start.sh — convenience entry
   const startSh = `#!/bin/sh
-# Craft Agent Server — convenience entry point
+# CrabPal Server — convenience entry point
 DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$DIR/bin/craft-server" "$@"
+exec "$DIR/bin/crabpal-server" "$@"
 `;
   writeFileSync(join(outputDir, 'start.sh'), startSh);
 
@@ -613,11 +613,11 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "=== Craft Agent Server Setup ==="
+echo "=== CrabPal Server Setup ==="
 echo ""
 
 # Make binaries executable
-chmod +x "$DIR/bin/craft-server" "$DIR/start.sh"
+chmod +x "$DIR/bin/crabpal-server" "$DIR/start.sh"
 [ -f "$DIR/vendor/bun/bun" ] && chmod +x "$DIR/vendor/bun/bun"
 [ -f "$DIR/resources/bin/uv" ] && chmod +x "$DIR/resources/bin/uv"
 
@@ -654,12 +654,12 @@ if [ "\${1:-}" = "--systemd" ]; then
     exit 1
   fi
 
-  SERVICE_USER="\${CRAB_PAL_USER:-\$(logname 2>/dev/null || echo craft)}"
-  SERVICE_FILE="/etc/systemd/system/craft-server.service"
+  SERVICE_USER="\${CRAB_PAL_USER:-\$(logname 2>/dev/null || echo crabpal)}"
+  SERVICE_FILE="/etc/systemd/system/crabpal-server.service"
 
   cat > "$SERVICE_FILE" <<UNIT
 [Unit]
-Description=Craft Agent Server
+Description=CrabPal Server
 After=network.target
 
 [Service]
@@ -669,7 +669,7 @@ WorkingDirectory=$DIR
 EnvironmentFile=$DIR/.env
 Environment=CRAB_PAL_RPC_HOST=127.0.0.1
 Environment=CRAB_PAL_RPC_PORT=9100
-ExecStart=$DIR/bin/craft-server
+ExecStart=$DIR/bin/crabpal-server
 Restart=on-failure
 RestartSec=5
 
@@ -678,13 +678,13 @@ WantedBy=multi-user.target
 UNIT
 
   systemctl daemon-reload
-  systemctl enable craft-server
+  systemctl enable crabpal-server
 
   echo ""
   echo "Systemd service installed."
-  echo "  Start:   sudo systemctl start craft-server"
-  echo "  Status:  sudo systemctl status craft-server"
-  echo "  Logs:    journalctl -u craft-server -f"
+  echo "  Start:   sudo systemctl start crabpal-server"
+  echo "  Status:  sudo systemctl status crabpal-server"
+  echo "  Logs:    journalctl -u crabpal-server -f"
   echo ""
   exit 0
 fi
@@ -701,7 +701,7 @@ echo ""
 
   // Make scripts executable at build time
   for (const script of [
-    join(binDir, 'craft-server'),
+    join(binDir, 'crabpal-server'),
     join(outputDir, 'start.sh'),
     join(outputDir, 'install.sh'),
   ]) {
@@ -724,7 +724,7 @@ WORKDIR /app
 COPY . .
 
 # Make binaries executable
-RUN chmod +x bin/craft-server vendor/bun/bun resources/bin/uv && \\
+RUN chmod +x bin/crabpal-server vendor/bun/bun resources/bin/uv && \\
     for f in resources/bin/*; do [ -f "$f" ] && chmod +x "$f"; done
 
 ENV CRAB_PAL_IS_PACKAGED=true
@@ -739,13 +739,13 @@ ENV PATH="/app/resources/bin:/app/vendor/bun:\${PATH}"
 
 EXPOSE 9100
 
-ENTRYPOINT ["/app/bin/craft-server"]
+ENTRYPOINT ["/app/bin/crabpal-server"]
 `;
   writeFileSync(join(outputDir, 'Dockerfile'), dockerfile);
 
   const dockerCompose = `version: "3.8"
 services:
-  craft-server:
+  crabpal-server:
     build: .
     ports:
       - "9100:9100"
@@ -756,13 +756,13 @@ services:
       # - CRAB_PAL_RPC_TLS_CERT=/certs/cert.pem
       # - CRAB_PAL_RPC_TLS_KEY=/certs/key.pem
     volumes:
-      - craft-data:/root/.craft-agent
+      - crabpal-data:/root/.crabpal
       # TLS — mount cert directory
       # - ./certs:/certs:ro
     restart: unless-stopped
 
 volumes:
-  craft-data:
+  crabpal-data:
 `;
   writeFileSync(join(outputDir, 'docker-compose.yml'), dockerCompose);
 }
@@ -828,7 +828,7 @@ async function main(): Promise<void> {
     version,
   };
 
-  console.log(`=== Building Craft Agent Server ${version} for ${platform}-${arch} ===`);
+  console.log(`=== Building CrabPal Server ${version} for ${platform}-${arch} ===`);
   console.log(`  Output: ${outputDir}`);
 
   // Step 1: Clean
@@ -883,7 +883,7 @@ async function main(): Promise<void> {
 
   // Compress if requested
   if (config.compress) {
-    const archiveName = `craft-server-${version}-${platform}-${arch}.tar.gz`;
+    const archiveName = `crabpal-server-${version}-${platform}-${arch}.tar.gz`;
     const archivePath = join(dirname(outputDir), archiveName);
     console.log(`\nCompressing to ${archiveName}...`);
     await $`tar -czf ${archivePath} -C ${outputDir} .`;
