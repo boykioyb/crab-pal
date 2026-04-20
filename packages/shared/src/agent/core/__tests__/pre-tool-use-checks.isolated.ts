@@ -91,7 +91,7 @@ mock.module('../../../skills/storage.ts', () => ({
 let mockCrabpalCliFlag = false;
 mock.module('../../../feature-flags.ts', () => ({
   FEATURE_FLAGS: {
-    get craftAgentsCli() {
+    get crabpalCli() {
       return mockCrabpalCliFlag;
     },
     get developerFeedback() {

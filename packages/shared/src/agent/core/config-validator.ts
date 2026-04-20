@@ -103,7 +103,7 @@ export class ConfigValidator {
    * @param filePath - Path to check
    * @returns true if this is a CrabPal config
    */
-  isCraftAgentConfig(filePath: string): boolean {
+  isCrabPalConfig(filePath: string): boolean {
     const normalizedPath = process.platform === 'win32'
       ? filePath.replace(/\\/g, '/').toLowerCase()
       : filePath.replace(/\\/g, '/');

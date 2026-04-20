@@ -42,7 +42,7 @@ export function isDeveloperFeedbackEnabled(): boolean {
  *
  * Defaults to disabled. Override with CRAB_PAL_FEATURE_CRABPAL_CLI=1|0.
  */
-export function isCraftAgentsCliEnabled(): boolean {
+export function isCrabPalCliEnabled(): boolean {
   const override = parseBooleanEnv(getEnv('CRAB_PAL_FEATURE_CRABPAL_CLI'));
   if (override !== undefined) return override;
   return false;
@@ -76,8 +76,8 @@ export const FEATURE_FLAGS = {
    *
    * Defaults to disabled. Override with CRAB_PAL_FEATURE_CRABPAL_CLI=1|0.
    */
-  get craftAgentsCli(): boolean {
-    return isCraftAgentsCliEnabled();
+  get crabpalCli(): boolean {
+    return isCrabPalCliEnabled();
   },
   /**
    * Enable embedded server settings page.

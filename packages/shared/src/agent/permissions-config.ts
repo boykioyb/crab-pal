@@ -379,7 +379,7 @@ function compileBlockedCommandHint(hint: BlockedCommandHintRule): CompiledBlocke
 }
 
 function shouldCompileBashPattern(pattern: string): boolean {
-  if (!FEATURE_FLAGS.craftAgentsCli && pattern.startsWith('^crabpal\\s')) {
+  if (!FEATURE_FLAGS.crabpalCli && pattern.startsWith('^crabpal\\s')) {
     return false;
   }
   return true;

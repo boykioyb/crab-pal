@@ -5,9 +5,9 @@
 import { Sun, Moon, X } from 'lucide-react'
 
 /**
- * CraftAgentLogo - The CrabPal "C" logo
+ * BrandLogo - The CrabPal "C" logo
  */
-function CraftAgentLogo({ className }: { className?: string }) {
+function BrandLogo({ className }: { className?: string }) {
   return (
     <svg
       className={className}
@@ -42,7 +42,7 @@ export function Header({ hasSession, sessionTitle, isDark, onToggleTheme, onClea
         className="hover:opacity-80 transition-opacity"
         title="CrabPal"
       >
-        <CraftAgentLogo className="w-6 h-6 text-[#9570BE]" />
+        <BrandLogo className="w-6 h-6 text-[#9570BE]" />
       </a>
 
       {/* Session title - centered */}

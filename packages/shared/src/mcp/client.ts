@@ -61,7 +61,7 @@ const BLOCKED_ENV_VARS = [
 
 /**
  * Interface for clients managed by McpClientPool.
- * Both CraftMcpClient (remote MCP sources) and ApiSourcePoolClient (API sources) implement this.
+ * Both CrabPalMcpClient (remote MCP sources) and ApiSourcePoolClient (API sources) implement this.
  */
 export interface PoolClient {
   listTools(): Promise<Tool[]>;
@@ -69,7 +69,7 @@ export interface PoolClient {
   close(): Promise<void>;
 }
 
-export class CraftMcpClient {
+export class CrabPalMcpClient {
   private client: Client;
   private transport: Transport;
   private connected = false;

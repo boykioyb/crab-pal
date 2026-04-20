@@ -137,7 +137,7 @@ export interface BashPatternRule {
  * Derive the canonical Explore-mode read-only crabpal bash patterns from
  * CLI domain policies. Keeps permissions regexes aligned with command metadata.
  */
-export function getCraftAgentReadOnlyBashPatterns(): BashPatternRule[] {
+export function getCrabPalReadOnlyBashPatterns(): BashPatternRule[] {
   const namespaces = Object.keys(POLICIES) as CliDomainNamespace[]
   const namespaceAlternation = namespaces.join('|')
 

@@ -54,7 +54,7 @@ import { generateMessageId, debug } from '@crabpal/core';
 - `MessageRole` - Message type enum
 - `ToolStatus` - Tool execution state
 - `TokenUsage` - Token counts and cost
-- `AgentEvent` - Events from CraftAgent
+- `AgentEvent` - Events from the agent
 - `TypedError` - Structured error info
 - `Question` - AskUserQuestion format
 

@@ -8,7 +8,7 @@
 import { query, type McpServerStatus } from '@anthropic-ai/claude-agent-sdk';
 import { spawn, type ChildProcess } from 'child_process';
 import { getDefaultOptions } from '../agent/options.ts';
-import { CraftMcpClient } from './client.js';
+import { CrabPalMcpClient } from './client.js';
 import { debug } from '../utils/debug.ts';
 import { getDefaultSummarizationModel } from '../config/models.ts';
 import { parseError, type AgentError } from '../agent/errors.ts';
@@ -213,7 +213,7 @@ export async function validateMcpConnection(
           ...config.mcpHeaders,
           ...(config.mcpAccessToken ? { Authorization: `Bearer ${config.mcpAccessToken}` } : {}),
         };
-        const mcpClient = new CraftMcpClient({
+        const mcpClient = new CrabPalMcpClient({
           transport: 'http',
           url: mcpUrl,
           headers: Object.keys(clientHeaders).length > 0 ? clientHeaders : undefined,

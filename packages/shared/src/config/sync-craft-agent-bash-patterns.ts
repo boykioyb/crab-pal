@@ -2,7 +2,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { getCraftAgentReadOnlyBashPatterns } from './cli-domains.ts'
+import { getCrabPalReadOnlyBashPatterns } from './cli-domains.ts'
 
 interface AllowedBashEntry {
   pattern: string
@@ -15,16 +15,16 @@ interface PermissionsConfig {
   [key: string]: unknown
 }
 
-function isCraftAgentPattern(entry: AllowedBashEntry): boolean {
+function isCrabPalPattern(entry: AllowedBashEntry): boolean {
   return typeof entry.pattern === 'string' && entry.pattern.startsWith('^crabpal\\s')
 }
 
-function syncCraftAgentPatterns(config: PermissionsConfig): PermissionsConfig {
+function syncCrabPalPatterns(config: PermissionsConfig): PermissionsConfig {
   const patterns = config.allowedBashPatterns ?? []
-  const firstCraftIndex = patterns.findIndex(isCraftAgentPattern)
+  const firstCraftIndex = patterns.findIndex(isCrabPalPattern)
 
-  const withoutCraft = patterns.filter(entry => !isCraftAgentPattern(entry))
-  const generated = getCraftAgentReadOnlyBashPatterns()
+  const withoutCraft = patterns.filter(entry => !isCrabPalPattern(entry))
+  const generated = getCrabPalReadOnlyBashPatterns()
 
   const insertAt = firstCraftIndex >= 0 ? firstCraftIndex : withoutCraft.length
   const nextAllowedBashPatterns = [
@@ -45,7 +45,7 @@ function main() {
     : resolve(process.cwd(), 'apps/electron/resources/permissions/default.json')
 
   const config = JSON.parse(readFileSync(targetPath, 'utf-8')) as PermissionsConfig
-  const nextConfig = syncCraftAgentPatterns(config)
+  const nextConfig = syncCrabPalPatterns(config)
 
   writeFileSync(targetPath, `${JSON.stringify(nextConfig, null, 2)}\n`, 'utf-8')
   process.stdout.write(`Synced crabpal bash patterns in ${targetPath}\n`)

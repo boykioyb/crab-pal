@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'bun:test';
-import { isDevRuntime, isDeveloperFeedbackEnabled, isCraftAgentsCliEnabled, isEmbeddedServerEnabled } from '../feature-flags.ts';
+import { isDevRuntime, isDeveloperFeedbackEnabled, isCrabPalCliEnabled, isEmbeddedServerEnabled } from '../feature-flags.ts';
 
 const ORIGINAL_ENV = {
   NODE_ENV: process.env.NODE_ENV,
@@ -64,22 +64,22 @@ describe('feature-flags runtime helpers', () => {
     expect(isDeveloperFeedbackEnabled()).toBe(true);
   });
 
-  it('isCraftAgentsCliEnabled defaults to false when no override is set', () => {
+  it('isCrabPalCliEnabled defaults to false when no override is set', () => {
     delete process.env.CRAB_PAL_FEATURE_CRABPAL_CLI;
 
-    expect(isCraftAgentsCliEnabled()).toBe(false);
+    expect(isCrabPalCliEnabled()).toBe(false);
   });
 
-  it('isCraftAgentsCliEnabled honors explicit override true', () => {
+  it('isCrabPalCliEnabled honors explicit override true', () => {
     process.env.CRAB_PAL_FEATURE_CRABPAL_CLI = '1';
 
-    expect(isCraftAgentsCliEnabled()).toBe(true);
+    expect(isCrabPalCliEnabled()).toBe(true);
   });
 
-  it('isCraftAgentsCliEnabled honors explicit override false', () => {
+  it('isCrabPalCliEnabled honors explicit override false', () => {
     process.env.CRAB_PAL_FEATURE_CRABPAL_CLI = '0';
 
-    expect(isCraftAgentsCliEnabled()).toBe(false);
+    expect(isCrabPalCliEnabled()).toBe(false);
   });
 
   it('isEmbeddedServerEnabled defaults to false when no override is set', () => {
