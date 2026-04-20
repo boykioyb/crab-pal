@@ -152,18 +152,18 @@ bun run electron:build
 echo "Packaging app with electron-builder..."
 cd "$ELECTRON_DIR"
 
-# Set up environment for electron-builder
-export CSC_IDENTITY_AUTO_DISCOVERY=true
-
 # Build electron-builder arguments
 BUILDER_ARGS="--mac --${ARCH}"
 
-# Add code signing if identity is available
+# Enable code signing only when an identity is explicitly configured
 if [ -n "$APPLE_SIGNING_IDENTITY" ]; then
-    # Strip "Developer ID Application: " prefix if present (electron-builder adds it automatically)
+    export CSC_IDENTITY_AUTO_DISCOVERY=true
     CSC_NAME_CLEAN="${APPLE_SIGNING_IDENTITY#Developer ID Application: }"
     echo "Using signing identity: $CSC_NAME_CLEAN"
     export CSC_NAME="$CSC_NAME_CLEAN"
+else
+    export CSC_IDENTITY_AUTO_DISCOVERY=false
+    echo "No signing identity configured, building unsigned"
 fi
 
 # Add notarization if all credentials are available

@@ -1,0 +1,95 @@
+name: Release Build
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to upload artifacts to (e.g. v0.0.1)'
+        required: true
+        type: string
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm64, x64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build macOS ${{ matrix.arch }}
+        run: bash apps/electron/scripts/build-dmg.sh ${{ matrix.arch }}
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          cd apps/electron/release
+          gh release upload "$TAG" \
+            "CrabPal-${{ matrix.arch }}.dmg" \
+            "CrabPal-${{ matrix.arch }}.dmg.blockmap" \
+            "CrabPal-${{ matrix.arch }}.zip" \
+            "CrabPal-${{ matrix.arch }}.zip.blockmap" \
+            --repo "${{ github.repository }}" \
+            --clobber
+          if [ -f "latest-mac.yml" ]; then
+            gh release upload "$TAG" latest-mac.yml \
+              --repo "${{ github.repository }}" \
+              --clobber
+          fi
+
+  build-win:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build Windows x64
+        run: powershell -ExecutionPolicy Bypass -File apps/electron/scripts/build-win.ps1
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          gh release upload "$TAG" \
+            apps/electron/release/CrabPal-x64.exe \
+            --repo "${{ github.repository }}" \
+            --clobber
+
+  build-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build Linux x64
+        run: bash apps/electron/scripts/build-linux.sh x64
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          APPIMAGE=$(ls apps/electron/release/*.AppImage | head -1)
+          gh release upload "$TAG" "$APPIMAGE" \
+            --repo "${{ github.repository }}" \
+            --clobber
