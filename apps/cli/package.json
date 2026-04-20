@@ -1,0 +1,25 @@
+{
+  "name": "@crabpal/cli",
+  "version": "0.8.3",
+  "license": "Apache-2.0",
+  "description": "Terminal client for CrabPal server",
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "crabpal": "src/index.ts"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test src/"
+  },
+  "dependencies": {
+    "@crabpal/shared": "workspace:*",
+    "@crabpal/server-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "@types/node": "^22.0.0",
+    "@types/bun": "latest"
+  }
+}

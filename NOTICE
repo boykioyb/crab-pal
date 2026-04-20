@@ -1,0 +1,16 @@
+CrabPal
+Copyright 2026 Boykioyb
+
+This product is based on Craft Agents and includes software originally
+developed by Craft Docs Ltd.
+https://craft.do
+
+---
+
+This project uses the Claude Agent SDK, which is subject to Anthropic's
+Commercial Terms of Service: https://www.anthropic.com/legal/commercial-terms
+
+---
+
+Third-party dependencies are listed in package.json files and are subject
+to their respective licenses.

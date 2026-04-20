@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node", "bun"],
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "baseUrl": ".",
+    "paths": {
+      "@crabpal/shared": ["../shared/src/index.ts"],
+      "@crabpal/shared/*": ["../shared/src/*"],
+      "@crabpal/server-core": ["../server-core/src/index.ts"],
+      "@crabpal/server-core/*": ["../server-core/src/*"],
+      "@crabpal/core": ["../core/src/index.ts"],
+      "@crabpal/core/*": ["../core/src/*"]
+    }
+  },
+  "include": ["src/**/*", "../shared/src/agent/bash-parser.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@crabpal/server",
+  "version": "0.8.3",
+  "description": "Standalone headless CrabPal server (Bun runtime)",
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "crabpal-server": "src/index.ts"
+  },
+  "files": [
+    "src/"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "author": {
+    "name": "Boykioyb",
+    "email": "support@crabpal.app"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://crabpal.app",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "generate-token": "bun run src/index.ts --generate-token",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@crabpal/core": "workspace:*",
+    "@crabpal/server-core": "workspace:*",
+    "@crabpal/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "@types/node": "^22.0.0",
+    "ws": "^8.16.0"
+  }
+}

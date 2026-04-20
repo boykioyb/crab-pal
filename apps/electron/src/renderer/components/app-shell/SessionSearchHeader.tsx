@@ -1,0 +1,105 @@
+import * as React from 'react'
+import { Search, X } from 'lucide-react'
+import { Spinner } from '@crabpal/ui'
+
+/**
+ * SessionSearchHeader - Presentational component for session list search UI.
+ *
+ * Renders:
+ * - Search input with static search icon
+ * - Status row showing "Loading…" or "{count} results" when query is active
+ *
+ * This component is shared between the main app (SessionList) and the playground.
+ */
+
+export interface SessionSearchHeaderProps {
+  /** Current search query value */
+  searchQuery: string
+  /** Called when search query changes */
+  onSearchChange?: (query: string) => void
+  /** Called when search is closed (X button) */
+  onSearchClose?: () => void
+  /** Called on keydown in the search input */
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  /** Called when input gains focus */
+  onFocus?: () => void
+  /** Called when input loses focus */
+  onBlur?: () => void
+  /** Whether content search is in progress */
+  isSearching?: boolean
+  /** Whether the search service is unavailable (e.g. ripgrep not found) */
+  isUnavailable?: boolean
+  /** Number of results to display (when not searching) */
+  resultCount?: number
+  /** Whether the result count exceeded the display limit (shows "100+" instead of exact count) */
+  exceededLimit?: boolean
+  /** Ref for the input element (for focus management) */
+  inputRef?: React.RefObject<HTMLInputElement>
+  /** Placeholder text */
+  placeholder?: string
+  /** Whether the input is read-only (for playground demos) */
+  readOnly?: boolean
+}
+
+export function SessionSearchHeader({
+  searchQuery,
+  onSearchChange,
+  onSearchClose,
+  onKeyDown,
+  onFocus,
+  onBlur,
+  isSearching = false,
+  isUnavailable = false,
+  resultCount,
+  exceededLimit = false,
+  inputRef,
+  placeholder = 'Search titles and content...',
+  readOnly = false,
+}: SessionSearchHeaderProps) {
+  return (
+    <div className="shrink-0 border-b border-border/40 px-3 pb-2 pt-3">
+      {/* Search input */}
+      <div className="relative rounded-lg border border-foreground/8 bg-foreground/[0.03] shadow-[0_16px_34px_-28px_rgba(15,23,42,0.45)] has-[:focus-visible]:border-accent/35 has-[:focus-visible]:bg-background">
+        {/* Search icon - always static, never changes to spinner */}
+        <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchQuery}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          onKeyDown={onKeyDown}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          readOnly={readOnly}
+          placeholder={placeholder}
+          className="h-10 w-full rounded-lg border-0 bg-transparent pl-9 pr-9 text-sm outline-none focus-visible:outline-none focus-visible:ring-0 placeholder:text-muted-foreground/50"
+        />
+        {onSearchClose && (
+          <button
+            onClick={onSearchClose}
+            className="absolute right-2 top-1/2 rounded-[8px] p-1 -translate-y-1/2 hover:bg-foreground/10"
+            title="Close search"
+          >
+            <X className="h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+        )}
+      </div>
+
+      {/* Search status row - shown when search mode is active (2+ characters) */}
+      {searchQuery.length >= 2 && (
+        <div className="flex items-center gap-1.5 px-1 pt-2.5 text-[11px] text-muted-foreground">
+          {isSearching ? (
+            <>
+              <Spinner className="text-[9px] text-foreground/50" />
+              <span>Loading…</span>
+            </>
+          ) : isUnavailable ? (
+            <span className="text-destructive/70">Search unavailable</span>
+          ) : (
+            <span>{exceededLimit ? '100+' : (resultCount ?? 0)} results</span>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
