@@ -8,16 +8,16 @@
 #   docker run --rm -p 9100:9100 \
 #     --user $(id -u):$(id -g) \
 #     -e HOME=/home/crabpal \
-#     -e CRAFT_SERVER_TOKEN=<secret> \
+#     -e CRAB_PAL_SERVER_TOKEN=<secret> \
 #     crabpal-server
 #
 # Run with TLS + mounted config:
 #   docker run --rm -p 9100:9100 \
 #     --user $(id -u):$(id -g) \
 #     -e HOME=/home/crabpal \
-#     -e CRAFT_SERVER_TOKEN=<secret> \
-#     -e CRAFT_RPC_TLS_CERT=/certs/cert.pem \
-#     -e CRAFT_RPC_TLS_KEY=/certs/key.pem \
+#     -e CRAB_PAL_SERVER_TOKEN=<secret> \
+#     -e CRAB_PAL_RPC_TLS_CERT=/certs/cert.pem \
+#     -e CRAB_PAL_RPC_TLS_KEY=/certs/key.pem \
 #     -v /path/to/certs:/certs:ro \
 #     -v ~/.crabpal:/home/crabpal/.crabpal \
 #     crabpal-server
@@ -81,9 +81,9 @@ RUN find /app -not -perm -o=r -exec chmod o+r {} + && \
 
 USER crabpal
 
-ENV CRAFT_RPC_HOST=0.0.0.0
-ENV CRAFT_RPC_PORT=9100
-ENV CRAFT_WEBUI_DIR=/app/apps/webui/dist
+ENV CRAB_PAL_RPC_HOST=0.0.0.0
+ENV CRAB_PAL_RPC_PORT=9100
+ENV CRAB_PAL_WEBUI_DIR=/app/apps/webui/dist
 
 EXPOSE 9100
 

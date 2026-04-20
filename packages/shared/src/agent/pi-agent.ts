@@ -364,9 +364,9 @@ export class PiAgent extends BaseAgent {
         ...this.config.envOverrides,
         ...awsEnv,
         // Pass session dir for cross-process toolMetadataStore
-        ...(sessionDir ? { CRAFT_SESSION_DIR: sessionDir } : {}),
+        ...(sessionDir ? { CRAB_PAL_SESSION_DIR: sessionDir } : {}),
         // Propagate debug mode
-        CRAFT_DEBUG: (process.argv.includes('--debug') || process.env.CRAFT_DEBUG === '1') ? '1' : '0',
+        CRAB_PAL_DEBUG: (process.argv.includes('--debug') || process.env.CRAB_PAL_DEBUG === '1') ? '1' : '0',
       },
     });
 

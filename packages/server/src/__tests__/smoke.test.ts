@@ -33,10 +33,10 @@ async function spawnTestServer(extraEnv?: Record<string, string>): Promise<Spawn
     env: {
       ...parentEnv,
       ...extraEnv,
-      CRAFT_SERVER_TOKEN: token,
-      CRAFT_RPC_PORT: '0',
-      CRAFT_RPC_HOST: '127.0.0.1',
-      CRAFT_HEALTH_PORT: '0', // random port
+      CRAB_PAL_SERVER_TOKEN: token,
+      CRAB_PAL_RPC_PORT: '0',
+      CRAB_PAL_RPC_HOST: '127.0.0.1',
+      CRAB_PAL_HEALTH_PORT: '0', // random port
     },
     stdout: 'pipe',
     stderr: 'pipe',
@@ -55,8 +55,8 @@ async function spawnTestServer(extraEnv?: Record<string, string>): Promise<Spawn
       const lines = buffer.split('\n')
       buffer = lines.pop() ?? ''
       for (const line of lines) {
-        if (line.startsWith('CRAFT_SERVER_URL=')) {
-          url = line.slice('CRAFT_SERVER_URL='.length).trim()
+        if (line.startsWith('CRAB_PAL_SERVER_URL=')) {
+          url = line.slice('CRAB_PAL_SERVER_URL='.length).trim()
         }
         if (url) {
           clearTimeout(timer)
@@ -90,7 +90,7 @@ async function spawnTestServer(extraEnv?: Record<string, string>): Promise<Spawn
       }
       clearTimeout(timer)
       if (!url) {
-        reject(new Error('Server exited before printing CRAFT_SERVER_URL'))
+        reject(new Error('Server exited before printing CRAB_PAL_SERVER_URL'))
       }
     })()
   })
@@ -154,9 +154,9 @@ describe('headless server smoke test', () => {
     const proc = Bun.spawn(['bun', 'run', SERVER_ENTRY], {
       env: {
         ...parentEnv,
-        CRAFT_SERVER_TOKEN: token,
-        CRAFT_RPC_PORT: '0',
-        CRAFT_RPC_HOST: '127.0.0.1',
+        CRAB_PAL_SERVER_TOKEN: token,
+        CRAB_PAL_RPC_PORT: '0',
+        CRAB_PAL_RPC_HOST: '127.0.0.1',
       },
       stdout: 'pipe',
       stderr: 'pipe',

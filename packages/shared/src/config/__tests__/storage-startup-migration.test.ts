@@ -65,7 +65,7 @@ function runMigration(configDir: string) {
   ], {
     env: {
       ...process.env,
-      CRAFT_CONFIG_DIR: configDir,
+      CRAB_PAL_CONFIG_DIR: configDir,
     },
     stdout: 'pipe',
     stderr: 'pipe',

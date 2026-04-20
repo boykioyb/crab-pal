@@ -227,37 +227,53 @@ const PAYLOAD_SKIP_KEYS = new Set(['sessionId', 'sessionName', 'workspaceId', 't
  */
 function buildBaseEventEnv(event: AutomationEvent, payload: BaseEventPayload): Record<string, string> {
   const env: Record<string, string> = {
-    CRAFT_EVENT: event,
-    CRAFT_EVENT_DATA: JSON.stringify(payload),
+    CRAB_PAL_EVENT: event,
+    CRAB_PAL_EVENT_DATA: JSON.stringify(payload),
   };
 
-  if (payload.sessionId) env.CRAFT_SESSION_ID = payload.sessionId;
-  if (payload.sessionName) env.CRAFT_SESSION_NAME = payload.sessionName;
-  if (payload.workspaceId) env.CRAFT_WORKSPACE_ID = payload.workspaceId;
+  if (payload.sessionId) env.CRAB_PAL_SESSION_ID = payload.sessionId;
+  if (payload.sessionName) env.CRAB_PAL_SESSION_NAME = payload.sessionName;
+  if (payload.workspaceId) env.CRAB_PAL_WORKSPACE_ID = payload.workspaceId;
 
   // Session metadata as JSON
   const sessionMetadata: Record<string, string> = {};
   if (payload.sessionId) sessionMetadata.id = payload.sessionId;
   if (payload.sessionName) sessionMetadata.name = payload.sessionName;
   if (Object.keys(sessionMetadata).length > 0) {
-    env.CRAFT_SESSION_METADATA = JSON.stringify(sessionMetadata);
+    env.CRAB_PAL_SESSION_METADATA = JSON.stringify(sessionMetadata);
   }
 
   // Local time for scheduler events
   if (event === 'SchedulerTick') {
     const now = new Date();
-    env.CRAFT_LOCAL_TIME = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-    env.CRAFT_LOCAL_DATE = now.toISOString().split('T')[0]!;
+    env.CRAB_PAL_LOCAL_TIME = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    env.CRAB_PAL_LOCAL_DATE = now.toISOString().split('T')[0]!;
   }
 
-  // Payload fields as CRAFT_ vars (raw — callers apply sanitization if needed)
+  // Payload fields as CRAB_PAL_ vars (raw — callers apply sanitization if needed)
   for (const [key, value] of Object.entries(payload)) {
     if (PAYLOAD_SKIP_KEYS.has(key)) continue;
-    const envKey = `CRAFT_${toSnakeCase(key).toUpperCase()}`;
+    const envKey = `CRAB_PAL_${toSnakeCase(key).toUpperCase()}`;
     env[envKey] = typeof value === 'string' ? value : String(value);
   }
 
+  // Backward-compat: mirror every CRAB_PAL_* into CRAFT_* so pre-rename prompt
+  // templates (e.g. `$CRAFT_LABEL`) keep expanding correctly.
+  mirrorCrabPalToCraft(env);
+
   return env;
+}
+
+/**
+ * Add CRAFT_FOO aliases for every CRAB_PAL_FOO key in `env` (non-destructive —
+ * skips if the CRAFT_ alias is already set).
+ */
+function mirrorCrabPalToCraft(env: Record<string, string>): void {
+  for (const key of Object.keys(env)) {
+    if (!key.startsWith('CRAB_PAL_')) continue;
+    const legacyKey = 'CRAFT_' + key.slice('CRAB_PAL_'.length);
+    if (env[legacyKey] === undefined) env[legacyKey] = env[key]!;
+  }
 }
 
 /**
@@ -269,14 +285,16 @@ export function buildEnvFromPayload(event: AutomationEvent, payload: BaseEventPa
   const env: Record<string, string> = { ...cleanEnv(), ...base };
 
   // Sanitize session name for shell context
-  if (payload.sessionName) env.CRAFT_SESSION_NAME = sanitizeForShell(payload.sessionName);
+  if (payload.sessionName) env.CRAB_PAL_SESSION_NAME = sanitizeForShell(payload.sessionName);
 
   // Sanitize payload field values for shell context
   for (const [key, value] of Object.entries(payload)) {
     if (PAYLOAD_SKIP_KEYS.has(key)) continue;
-    const envKey = `CRAFT_${toSnakeCase(key).toUpperCase()}`;
+    const envKey = `CRAB_PAL_${toSnakeCase(key).toUpperCase()}`;
     env[envKey] = typeof value === 'string' ? sanitizeForShell(value) : String(value);
   }
+
+  mirrorCrabPalToCraft(env);
 
   return env;
 }
@@ -287,24 +305,30 @@ export function buildEnvFromPayload(event: AutomationEvent, payload: BaseEventPa
  * Unlike buildEnvFromPayload (used by prompt actions), this:
  * - Does NOT spread process.env (no secret leakage)
  * - Does NOT apply shell sanitization (irrelevant for HTTP context)
- * - Only injects CRAFT_WH_* user-defined vars from process.env (webhook secrets)
+ * - Only injects CRAB_PAL_WH_* user-defined vars from process.env (webhook secrets)
  * - Includes CRAFT_* system vars derived from the event payload
  *
  * Users set webhook secrets in their shell profile:
- *   export CRAFT_WH_SLACK_URL="https://hooks.slack.com/services/T.../B.../xxx"
- *   export CRAFT_WH_DISCORD_TOKEN="abc123"
+ *   export CRAB_PAL_WH_SLACK_URL="https://hooks.slack.com/services/T.../B.../xxx"
+ *   export CRAB_PAL_WH_DISCORD_TOKEN="abc123"
  *
  * Then reference them in automations.json:
- *   "url": "${CRAFT_WH_SLACK_URL}"
- *   "headers": { "Authorization": "Bearer ${CRAFT_WH_DISCORD_TOKEN}" }
+ *   "url": "${CRAB_PAL_WH_SLACK_URL}"
+ *   "headers": { "Authorization": "Bearer ${CRAB_PAL_WH_DISCORD_TOKEN}" }
  */
 export function buildWebhookEnv(event: AutomationEvent, payload: BaseEventPayload): Record<string, string> {
   const env = buildBaseEventEnv(event, payload);
 
-  // User-defined webhook secrets: only CRAFT_WH_* from process.env
+  // User-defined webhook secrets: CRAB_PAL_WH_* from process.env,
+  // with backward-compat for legacy CRAFT_WH_* names.
   for (const [key, value] of Object.entries(process.env)) {
-    if (key.startsWith('CRAFT_WH_') && value !== undefined) {
+    if (value === undefined) continue;
+    if (key.startsWith('CRAB_PAL_WH_')) {
       env[key] = value;
+    } else if (key.startsWith('CRAFT_WH_')) {
+      env[key] = value;
+      const newKey = 'CRAB_PAL_WH_' + key.slice('CRAFT_WH_'.length);
+      if (env[newKey] === undefined) env[newKey] = value;
     }
   }
 

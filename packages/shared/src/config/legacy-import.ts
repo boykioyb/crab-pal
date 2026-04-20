@@ -261,7 +261,7 @@ export function writeLegacyImportMarker(
 }
 
 function hasExplicitConfigDirOverride(): boolean {
-  return !!process.env.CRABPAL_CONFIG_DIR || !!process.env.CRAFT_CONFIG_DIR;
+  return !!process.env.CRABPAL_CONFIG_DIR || !!process.env.CRAB_PAL_CONFIG_DIR;
 }
 
 // ---------------------------------------------------------------------------

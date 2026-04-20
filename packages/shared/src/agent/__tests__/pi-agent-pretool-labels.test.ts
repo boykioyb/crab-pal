@@ -5,15 +5,15 @@ import type { BackendConfig } from '../backend/types.ts'
 let origFlag: string | undefined
 
 beforeAll(() => {
-  origFlag = process.env.CRAFT_FEATURE_CRAFT_AGENTS_CLI
-  process.env.CRAFT_FEATURE_CRAFT_AGENTS_CLI = '1'
+  origFlag = process.env.CRAB_PAL_FEATURE_CRABPAL_CLI
+  process.env.CRAB_PAL_FEATURE_CRABPAL_CLI = '1'
 })
 
 afterAll(() => {
   if (origFlag === undefined) {
-    delete process.env.CRAFT_FEATURE_CRAFT_AGENTS_CLI
+    delete process.env.CRAB_PAL_FEATURE_CRABPAL_CLI
   } else {
-    process.env.CRAFT_FEATURE_CRAFT_AGENTS_CLI = origFlag
+    process.env.CRAB_PAL_FEATURE_CRABPAL_CLI = origFlag
   }
 })
 

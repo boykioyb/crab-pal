@@ -17,5 +17,5 @@ import { join } from 'path';
 // Prefer the new CrabPal env var but keep the old one as a compatibility fallback.
 export const CONFIG_DIR =
   process.env.CRABPAL_CONFIG_DIR ||
-  process.env.CRAFT_CONFIG_DIR ||
+  process.env.CRAB_PAL_CONFIG_DIR ||
   join(homedir(), '.crabpal');

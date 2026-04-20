@@ -7,9 +7,9 @@ import { pathToFileURL } from 'url'
 const STORAGE_MODULE_PATH = pathToFileURL(join(import.meta.dir, '..', 'storage.ts')).href
 
 function runEnsureConfigDir(homeDir: string): void {
-  const { CRABPAL_CONFIG_DIR, CRAFT_CONFIG_DIR, ...baseEnv } = process.env
+  const { CRABPAL_CONFIG_DIR, CRAB_PAL_CONFIG_DIR, ...baseEnv } = process.env
   void CRABPAL_CONFIG_DIR
-  void CRAFT_CONFIG_DIR
+  void CRAB_PAL_CONFIG_DIR
 
   const run = Bun.spawnSync([
     process.execPath,

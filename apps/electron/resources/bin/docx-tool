@@ -1,2 +1,2 @@
 #!/bin/sh
-exec "$CRAFT_UV" run --python 3.12 "$CRAFT_SCRIPTS/docx_tool.py" "$@"
+exec "$CRAB_PAL_UV" run --python 3.12 "$CRAB_PAL_SCRIPTS/docx_tool.py" "$@"

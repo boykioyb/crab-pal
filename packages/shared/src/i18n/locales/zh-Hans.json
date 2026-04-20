@@ -1183,7 +1183,7 @@
   "toast.webhookReplayCompleted": "Webhook 回放完成",
   "toast.workspaceReconnected": "Workspace 已重新连接",
   "toolbar.escapeToInterrupt": "再次按 <kbd>Esc</kbd> 以中断",
-  "transport.authFailed": "身份验证失败，请检查 CRAFT_SERVER_TOKEN。",
+  "transport.authFailed": "身份验证失败，请检查 CRAB_PAL_SERVER_TOKEN。",
   "transport.connecting": "正在连接远程服务器",
   "transport.connectingDesc": "正在连接 {{url}}...",
   "transport.defaultStatus": "远程服务器连接状态",

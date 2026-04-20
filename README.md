@@ -188,21 +188,21 @@ CrabPal can run as a headless WebSocket server on a remote machine (e.g. a Linux
 ### Start a server
 
 ```bash
-CRAFT_SERVER_TOKEN=$(openssl rand -hex 32) bun run packages/server/src/index.ts
+CRAB_PAL_SERVER_TOKEN=$(openssl rand -hex 32) bun run packages/server/src/index.ts
 ```
 
 The server prints its connection details on startup:
 
 ```
-CRAFT_SERVER_URL=ws://203.0.113.5:9100
-CRAFT_SERVER_TOKEN=<generated-token>
+CRAB_PAL_SERVER_URL=ws://203.0.113.5:9100
+CRAB_PAL_SERVER_TOKEN=<generated-token>
 ```
 
 ### Connect the desktop app
 
 ```bash
-CRAFT_SERVER_URL=wss://203.0.113.5:9100 \
-CRAFT_SERVER_TOKEN=<token> \
+CRAB_PAL_SERVER_URL=wss://203.0.113.5:9100 \
+CRAB_PAL_SERVER_TOKEN=<token> \
 bun run electron:start
 ```
 
@@ -212,13 +212,13 @@ In thin‑client mode the UI renders locally while all session logic, tool execu
 
 | Variable               | Required | Default       | Description                                                   |
 | ---------------------- | -------- | ------------- | ------------------------------------------------------------- |
-| `CRAFT_SERVER_TOKEN` | Yes      | —            | Bearer token for client authentication                        |
-| `CRAFT_RPC_HOST`     | No       | `127.0.0.1` | Bind address (`0.0.0.0` for remote access)                  |
-| `CRAFT_RPC_PORT`     | No       | `9100`      | Bind port                                                     |
-| `CRAFT_RPC_TLS_CERT` | No       | —            | Path to PEM certificate file (enables `wss://`)             |
-| `CRAFT_RPC_TLS_KEY`  | No       | —            | Path to PEM private key file (required with cert)             |
-| `CRAFT_RPC_TLS_CA`   | No       | —            | Path to PEM CA chain (optional, for client cert verification) |
-| `CRAFT_DEBUG`        | No       | `false`     | Enable debug logging                                          |
+| `CRAB_PAL_SERVER_TOKEN` | Yes      | —            | Bearer token for client authentication                        |
+| `CRAB_PAL_RPC_HOST`     | No       | `127.0.0.1` | Bind address (`0.0.0.0` for remote access)                  |
+| `CRAB_PAL_RPC_PORT`     | No       | `9100`      | Bind port                                                     |
+| `CRAB_PAL_RPC_TLS_CERT` | No       | —            | Path to PEM certificate file (enables `wss://`)             |
+| `CRAB_PAL_RPC_TLS_KEY`  | No       | —            | Path to PEM private key file (required with cert)             |
+| `CRAB_PAL_RPC_TLS_CA`   | No       | —            | Path to PEM CA chain (optional, for client cert verification) |
+| `CRAB_PAL_DEBUG`        | No       | `false`     | Enable debug logging                                          |
 
 ### TLS (recommended for remote access)
 
@@ -231,10 +231,10 @@ Generate a self‑signed cert for development:
 Then start the server with TLS:
 
 ```bash
-CRAFT_SERVER_TOKEN=<token> \
-CRAFT_RPC_HOST=0.0.0.0 \
-CRAFT_RPC_TLS_CERT=certs/cert.pem \
-CRAFT_RPC_TLS_KEY=certs/key.pem \
+CRAB_PAL_SERVER_TOKEN=<token> \
+CRAB_PAL_RPC_HOST=0.0.0.0 \
+CRAB_PAL_RPC_TLS_CERT=certs/cert.pem \
+CRAB_PAL_RPC_TLS_KEY=certs/key.pem \
 bun run packages/server/src/index.ts
 ```
 
@@ -245,8 +245,8 @@ For production, use certificates from a trusted CA (e.g. Let's Encrypt) or termi
 ```bash
 docker run -d \
   -p 9100:9100 \
-  -e CRAFT_SERVER_TOKEN=<token> \
-  -e CRAFT_RPC_HOST=0.0.0.0 \
+  -e CRAB_PAL_SERVER_TOKEN=<token> \
+  -e CRAB_PAL_RPC_HOST=0.0.0.0 \
   -v crabpal-data:/root/.crabpal \
   crabpal-server
 ```
@@ -268,8 +268,8 @@ alias crabpal="bun run $(pwd)/apps/cli/src/index.ts"
 ### Connection
 
 ```bash
-export CRAFT_SERVER_URL=ws://127.0.0.1:9100
-export CRAFT_SERVER_TOKEN=<your-token>
+export CRAB_PAL_SERVER_URL=ws://127.0.0.1:9100
+export CRAB_PAL_SERVER_TOKEN=<your-token>
 crabpal ping
 ```
 
@@ -426,7 +426,7 @@ Or configure manually in `~/.crabpal/workspaces/{id}/automations.json`:
 }
 ```
 
-Prompt actions support `@mentions` for sources and skills. Environment variables such as `$CRAFT_LABEL` and `$CRAFT_SESSION_ID` are expanded automatically.
+Prompt actions support `@mentions` for sources and skills. Environment variables such as `$CRAB_PAL_LABEL` and `$CRAB_PAL_SESSION_ID` are expanded automatically.
 
 **Supported events:** `LabelAdd`, `LabelRemove`, `PermissionModeChange`, `FlagChange`, `SessionStatusChange`, `SchedulerTick`, `PreToolUse`, `PostToolUse`, `SessionStart`, `SessionEnd`, and more.
 

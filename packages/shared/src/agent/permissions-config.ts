@@ -48,7 +48,7 @@ let permissionsInitialized = false;
 export function getAppPermissionsDir(): string {
   const configDir =
     process.env.CRABPAL_CONFIG_DIR ||
-    process.env.CRAFT_CONFIG_DIR ||
+    process.env.CRAB_PAL_CONFIG_DIR ||
     join(homedir(), '.crabpal');
   return join(configDir, 'permissions');
 }

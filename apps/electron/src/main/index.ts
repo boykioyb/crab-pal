@@ -3,6 +3,9 @@
 import { loadShellEnv } from './shell-env'
 loadShellEnv()
 
+import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env'
+applyLegacyCraftEnv()
+
 import { app, BrowserWindow, dialog, ipcMain, nativeImage, nativeTheme, shell } from 'electron'
 import { createHash, randomUUID } from 'crypto'
 import { hostname, homedir } from 'os'
@@ -105,13 +108,13 @@ log.initialize()
 
 // Enable debug/perf in dev mode (running from source)
 if (isDebugMode) {
-  process.env.CRAFT_DEBUG = '1'
+  process.env.CRAB_PAL_DEBUG = '1'
   enableDebug()
   setPerfEnabled(true)
 }
 
 // Bundle CLI tools: resolve platform-specific uv binary and wrapper scripts.
-// These are available to all agent Bash sessions via CRAFT_UV, CRAFT_SCRIPTS env vars
+// These are available to all agent Bash sessions via CRAB_PAL_UV, CRAB_PAL_SCRIPTS env vars
 // and PATH prepend. uv auto-downloads Python 3.12 on first use (~5s, then cached).
 {
   // In packaged app: resources are at process.resourcesPath/app/resources/
@@ -129,29 +132,29 @@ if (isDebugMode) {
   const fallbackUv = bundledUvExists ? null : 'uv'
 
   // Runtime resolver hints for shared session tools
-  process.env.CRAFT_IS_PACKAGED = app.isPackaged ? '1' : '0'
-  process.env.CRAFT_RESOURCES_BASE = resourcesBase
-  process.env.CRAFT_APP_ROOT = app.isPackaged ? app.getAppPath() : process.cwd()
+  process.env.CRAB_PAL_IS_PACKAGED = app.isPackaged ? '1' : '0'
+  process.env.CRAB_PAL_RESOURCES_BASE = resourcesBase
+  process.env.CRAB_PAL_APP_ROOT = app.isPackaged ? app.getAppPath() : process.cwd()
 
-  process.env.CRAFT_UV = bundledUvExists ? uvBinary : (fallbackUv ?? uvBinary)
+  process.env.CRAB_PAL_UV = bundledUvExists ? uvBinary : (fallbackUv ?? uvBinary)
 
   // Bun runtime (packaged builds should prefer bundled runtime over PATH)
   const bunBinary = join(resourcesBase, 'vendor', 'bun', process.platform === 'win32' ? 'bun.exe' : 'bun')
   if (existsSync(bunBinary)) {
-    process.env.CRAFT_BUN = bunBinary
+    process.env.CRAB_PAL_BUN = bunBinary
   }
 
-  process.env.CRAFT_SCRIPTS = scriptsDir
+  process.env.CRAB_PAL_SCRIPTS = scriptsDir
   const bundledCliEntry = app.isPackaged
     ? join(app.getAppPath(), 'apps', 'cli', 'src', 'index.ts')
     : join(process.cwd(), 'apps', 'cli', 'src', 'index.ts')
-  process.env.CRAFT_COMMANDS_ENTRY = bundledCliEntry
-  process.env.CRAFT_CLI_ENTRY = bundledCliEntry
-  process.env.CRAFT_COMMANDS_DOC_PATH = app.isPackaged
+  process.env.CRAB_PAL_COMMANDS_ENTRY = bundledCliEntry
+  process.env.CRAB_PAL_CLI_ENTRY = bundledCliEntry
+  process.env.CRAB_PAL_COMMANDS_DOC_PATH = app.isPackaged
     ? join(resourcesBase, 'resources', 'docs', 'crabpal-cli.md')
     : join(process.cwd(), 'apps', 'electron', 'resources', 'docs', 'crabpal-cli.md')
-  process.env.CRAFT_CLI_DOC_PATH = process.env.CRAFT_COMMANDS_DOC_PATH
-  process.env.CRAFT_AGENT_VERSION = app.getVersion()
+  process.env.CRAB_PAL_CLI_DOC_PATH = process.env.CRAB_PAL_COMMANDS_DOC_PATH
+  process.env.CRAB_PAL_AGENT_VERSION = app.getVersion()
   // Prepend both generic wrappers dir and platform uv dir:
   // - binDir exposes wrapper commands (pdf-tool, docx-tool, ...)
   // - uvPlatformDir exposes raw `uv` for direct shell usage / debugging
@@ -160,12 +163,12 @@ if (isDebugMode) {
   if (!bundledUvExists) {
     mainLog.warn('Bundled uv binary missing, CLI document tools may fail unless uv is available on PATH.', {
       expectedUvPath: uvBinary,
-      usingCraftUv: process.env.CRAFT_UV,
+      usingCraftUv: process.env.CRAB_PAL_UV,
     })
   }
 
   if (isDebugMode) {
-    mainLog.info('CLI tools configured:', { uvBinary: process.env.CRAFT_UV, binDir, scriptsDir, bundledUvExists })
+    mainLog.info('CLI tools configured:', { uvBinary: process.env.CRAB_PAL_UV, binDir, scriptsDir, bundledUvExists })
   }
 }
 
@@ -179,7 +182,7 @@ registerPiModelResolver((piAuthProvider) =>
 // Prefer the new CrabPal env var while keeping the old one as a compatibility fallback.
 const DEEPLINK_SCHEME =
   process.env.CRABPAL_DEEPLINK_SCHEME ||
-  process.env.CRAFT_DEEPLINK_SCHEME ||
+  process.env.CRAB_PAL_DEEPLINK_SCHEME ||
   'crabpal'
 
 let windowManager: WindowManager | null = null
@@ -193,7 +196,7 @@ let moduleClientResolver: ((webContentsId: number) => string | undefined) | null
 let pendingDeepLink: string | null = null
 
 // Set app name early (before app.whenReady) to ensure correct macOS menu bar title.
-app.setName(process.env.CRABPAL_APP_NAME || process.env.CRAFT_APP_NAME || 'CrabPal')
+app.setName(process.env.CRABPAL_APP_NAME || process.env.CRAB_PAL_APP_NAME || 'CrabPal')
 
 // Register as default protocol client for crabpal:// URLs
 // This must be done before app.whenReady() on some platforms
@@ -212,7 +215,7 @@ import { applyConfiguredProxySettings } from './network-proxy'
 void applyConfiguredProxySettings()
 
 // Accept self-signed / untrusted certificates when connecting to a user-configured remote server.
-// Only bypasses cert validation for the exact CRAFT_SERVER_URL origin — all other connections
+// Only bypasses cert validation for the exact CRAB_PAL_SERVER_URL origin — all other connections
 // use standard certificate verification. Without this, wss:// to self-signed servers fails with
 // ERR_CERT_AUTHORITY_INVALID because Chromium's WebSocket rejects untrusted certs.
 //
@@ -225,10 +228,10 @@ function normalizeOriginForCert(urlStr: string): string {
   return u.origin
 }
 
-if (process.env.CRAFT_SERVER_URL) {
+if (process.env.CRAB_PAL_SERVER_URL) {
   let serverOrigin: string | undefined
   try {
-    serverOrigin = normalizeOriginForCert(process.env.CRAFT_SERVER_URL)
+    serverOrigin = normalizeOriginForCert(process.env.CRAB_PAL_SERVER_URL)
   } catch {
     // Invalid URL — will fail later during connection, no need to handle here
   }
@@ -348,7 +351,7 @@ async function createInitialWindows(): Promise<void> {
 
 app.whenReady().then(async () => {
   // Export packaged state as env var so logger.ts (and headless Bun) don't need 'electron'
-  process.env.CRAFT_IS_PACKAGED = app.isPackaged ? 'true' : 'false'
+  process.env.CRAB_PAL_IS_PACKAGED = app.isPackaged ? 'true' : 'false'
 
   // Register bundled assets root so all seeding functions can find their files
   // (docs, permissions, themes, tool-icons resolve via getBundledAssetsDir)
@@ -409,8 +412,8 @@ app.whenReady().then(async () => {
     }
 
     // Multi-instance dev: show instance number badge on dock icon
-    // CRAFT_INSTANCE_NUMBER is set by detect-instance.sh for numbered folders
-    const instanceNum = process.env.CRAFT_INSTANCE_NUMBER
+    // CRAB_PAL_INSTANCE_NUMBER is set by detect-instance.sh for numbered folders
+    const instanceNum = process.env.CRAB_PAL_INSTANCE_NUMBER
     if (instanceNum) {
       const num = parseInt(instanceNum, 10)
       if (!isNaN(num) && num > 0) {
@@ -426,14 +429,14 @@ app.whenReady().then(async () => {
     // Create the application menu (needs windowManager for New Window action)
     createApplicationMenu(windowManager)
 
-    // When CRAFT_SERVER_URL is set, this Electron instance is a thin client —
+    // When CRAB_PAL_SERVER_URL is set, this Electron instance is a thin client —
     // it only creates windows whose preload connects to the remote server.
     // Skip server-side initialization (SessionManager, model refresh, platform injection).
-    const isClientOnly = !!process.env.CRAFT_SERVER_URL
-    const isHeadless = !!process.env.CRAFT_HEADLESS
+    const isClientOnly = !!process.env.CRAB_PAL_SERVER_URL
+    const isHeadless = !!process.env.CRAB_PAL_HEADLESS
 
     if (isClientOnly) {
-      mainLog.info(`Client-only mode: CRAFT_SERVER_URL=${process.env.CRAFT_SERVER_URL} (server initialization skipped)`)
+      mainLog.info(`Client-only mode: CRAB_PAL_SERVER_URL=${process.env.CRAB_PAL_SERVER_URL} (server initialization skipped)`)
     }
 
     // Initialize notification service (always — triggered by server push events)
@@ -540,9 +543,9 @@ app.whenReady().then(async () => {
         const vcCheck = checkVCRedistInstalled()
         if (!vcCheck.installed) {
           mainLog.warn('[vcredist]', vcCheck.message)
-          process.env.CRAFT_VCREDIST_MISSING = '1'
+          process.env.CRAB_PAL_VCREDIST_MISSING = '1'
           if (vcCheck.downloadUrl) {
-            process.env.CRAFT_VCREDIST_URL = vcCheck.downloadUrl
+            process.env.CRAB_PAL_VCREDIST_URL = vcCheck.downloadUrl
           }
         } else if (isDebugMode) {
           mainLog.info('[vcredist]', vcCheck.message)
@@ -565,10 +568,10 @@ app.whenReady().then(async () => {
       const serverToken = serverModeEnabled && embeddedServerConfig.token
         ? embeddedServerConfig.token
         : randomUUID()
-      const rpcHost = process.env.CRAFT_RPC_HOST
+      const rpcHost = process.env.CRAB_PAL_RPC_HOST
         ?? (serverModeEnabled ? '0.0.0.0' : '127.0.0.1')
-      const rpcPort = process.env.CRAFT_RPC_PORT
-        ? parseInt(process.env.CRAFT_RPC_PORT, 10)
+      const rpcPort = process.env.CRAB_PAL_RPC_PORT
+        ? parseInt(process.env.CRAB_PAL_RPC_PORT, 10)
         : (serverModeEnabled ? embeddedServerConfig.port : 0)
 
       // Load TLS certificates if configured
@@ -820,8 +823,8 @@ app.whenReady().then(async () => {
 
       // Headless: print connection details
       if (isHeadless) {
-        console.log(`CRAFT_SERVER_URL=${instance.protocol}://${instance.host}:${instance.port}`)
-        console.log(`CRAFT_SERVER_TOKEN=${instance.token}`)
+        console.log(`CRAB_PAL_SERVER_URL=${instance.protocol}://${instance.host}:${instance.port}`)
+        console.log(`CRAB_PAL_SERVER_TOKEN=${instance.token}`)
       }
     }
 
@@ -921,7 +924,7 @@ app.whenReady().then(async () => {
 })
 
 app.on('window-all-closed', () => {
-  if (process.env.CRAFT_HEADLESS) return  // headless server stays alive
+  if (process.env.CRAB_PAL_HEADLESS) return  // headless server stays alive
   // On macOS, apps typically stay active until explicitly quit
   if (process.platform !== 'darwin') {
     app.quit()

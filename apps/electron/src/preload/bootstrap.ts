@@ -7,7 +7,7 @@
  *   the active workspace (local or remote). Workspace switches swap the
  *   workspace client transparently.
  *
- * Thin-client mode (CRAFT_SERVER_URL):
+ * Thin-client mode (CRAB_PAL_SERVER_URL):
  *   Creates a single WsRpcClient connected to the remote server.
  *   All channels go to the remote server.
  *
@@ -53,7 +53,7 @@ interface TransportClient extends RpcClient {
 // ---------------------------------------------------------------------------
 
 const webContentsId: number = ipcRenderer.sendSync('__get-web-contents-id')
-const isClientOnly = !!process.env.CRAFT_SERVER_URL
+const isClientOnly = !!process.env.CRAB_PAL_SERVER_URL
 
 let client: TransportClient
 
@@ -62,8 +62,8 @@ if (isClientOnly) {
   // Single WsRpcClient connected directly to the remote server.
   // No local server, no routing — all channels go to remote.
 
-  const wsUrl = process.env.CRAFT_SERVER_URL!
-  const wsToken = process.env.CRAFT_SERVER_TOKEN ?? ''
+  const wsUrl = process.env.CRAB_PAL_SERVER_URL!
+  const wsToken = process.env.CRAB_PAL_SERVER_TOKEN ?? ''
 
   // Block unencrypted ws:// to non-localhost servers — tokens would be sent in cleartext
   const parsed = new URL(wsUrl)
@@ -72,12 +72,12 @@ if (isClientOnly) {
     throw new Error(
       `Refusing to connect to remote server over unencrypted ws://. ` +
       `Use wss:// (TLS) for non-localhost connections. ` +
-      `Set CRAFT_RPC_TLS_CERT/KEY on the server to enable TLS.`
+      `Set CRAB_PAL_RPC_TLS_CERT/KEY on the server to enable TLS.`
     )
   }
 
   // Workspace ID is optional — if missing, renderer shows a workspace picker
-  const workspaceId = process.env.CRAFT_WORKSPACE_ID || ipcRenderer.sendSync('__get-workspace-id') || undefined
+  const workspaceId = process.env.CRAB_PAL_WORKSPACE_ID || ipcRenderer.sendSync('__get-workspace-id') || undefined
 
   const wsClient = new WsRpcClient(wsUrl, {
     token: wsToken,
@@ -410,8 +410,8 @@ client.onConnectionStateChanged((state) => {
 // System warnings — expose env-based flags set during main process startup
 // (preload-only: reads env var directly, no IPC round-trip needed)
 ;(api as ElectronAPI).getSystemWarnings = async () => ({
-  vcredistMissing: process.env.CRAFT_VCREDIST_MISSING === '1',
-  downloadUrl: process.env.CRAFT_VCREDIST_URL,
+  vcredistMissing: process.env.CRAB_PAL_VCREDIST_MISSING === '1',
+  downloadUrl: process.env.CRAB_PAL_VCREDIST_URL,
 })
 
 contextBridge.exposeInMainWorld('electronAPI', api)

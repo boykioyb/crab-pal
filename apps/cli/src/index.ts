@@ -9,6 +9,9 @@
 
 import { resolve } from 'path'
 import { CliRpcClient } from './client.ts'
+import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env'
+
+applyLegacyCraftEnv()
 
 // ---------------------------------------------------------------------------
 // Arg parsing
@@ -146,9 +149,9 @@ export function parseArgs(argv: string[]): CliArgs {
   }
 
   // Env var fallbacks
-  if (!url) url = process.env.CRAFT_SERVER_URL ?? ''
-  if (!token) token = process.env.CRAFT_SERVER_TOKEN ?? ''
-  if (!tlsCa) tlsCa = process.env.CRAFT_TLS_CA
+  if (!url) url = process.env.CRAB_PAL_SERVER_URL ?? ''
+  if (!token) token = process.env.CRAB_PAL_SERVER_TOKEN ?? ''
+  if (!tlsCa) tlsCa = process.env.CRAB_PAL_TLS_CA
   if (!provider) provider = process.env.LLM_PROVIDER ?? 'anthropic'
   if (!model) model = process.env.LLM_MODEL ?? ''
   if (!apiKey) apiKey = process.env.LLM_API_KEY ?? ''
@@ -1746,8 +1749,8 @@ function printHelp(): void {
 Usage: crabpal [options] <command> [args...]
 
 Connection:
-  --url <ws[s]://...>    Server URL (default: $CRAFT_SERVER_URL)
-  --token <secret>       Auth token (default: $CRAFT_SERVER_TOKEN)
+  --url <ws[s]://...>    Server URL (default: $CRAB_PAL_SERVER_URL)
+  --token <secret>       Auth token (default: $CRAB_PAL_SERVER_TOKEN)
   --workspace <id>       Workspace ID (auto-detected if omitted)
   --timeout <ms>         Request timeout (default: 10000)
   --tls-ca <path>        Custom CA cert for self-signed TLS
@@ -1840,7 +1843,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
 
   // All other commands need a server URL
   if (!args.url) {
-    err('No server URL. Use --url <ws://...> or set $CRAFT_SERVER_URL')
+    err('No server URL. Use --url <ws://...> or set $CRAB_PAL_SERVER_URL')
     process.exit(1)
   }
 

@@ -5,7 +5,7 @@ import { existsSync, readFileSync, writeFileSync, unlinkSync, readdirSync } from
 import { debug } from "../utils/debug";
 import { getProxyEnvVars } from "../config/proxy-env.ts";
 
-declare const CRAFT_AGENT_CLI_VERSION: string | undefined;
+declare const CRAB_PAL_AGENT_CLI_VERSION: string | undefined;
 
 let customPathToClaudeCodeExecutable: string | null = null;
 let customInterceptorPath: string | null = null;
@@ -191,7 +191,7 @@ export function buildClaudeSubprocessEnv(
         ...process.env,
         ...getProxyEnvVars(),
         // Propagate debug mode from argv flag OR existing env var
-        CRAFT_DEBUG: (process.argv.includes('--debug') || process.env.CRAFT_DEBUG === '1') ? '1' : '0',
+        CRAB_PAL_DEBUG: (process.argv.includes('--debug') || process.env.CRAB_PAL_DEBUG === '1') ? '1' : '0',
     };
 
     // Auth keys must not be inherited from the parent process — they are set
@@ -246,8 +246,8 @@ export function getDefaultOptions(envOverrides?: Record<string, string>): Partia
         };
     }
 
-    if (typeof CRAFT_AGENT_CLI_VERSION !== 'undefined' && CRAFT_AGENT_CLI_VERSION != null) {
-        const baseDir = join(homedir(), '.local', 'share', 'craft', 'versions', CRAFT_AGENT_CLI_VERSION);
+    if (typeof CRAB_PAL_AGENT_CLI_VERSION !== 'undefined' && CRAB_PAL_AGENT_CLI_VERSION != null) {
+        const baseDir = join(homedir(), '.local', 'share', 'craft', 'versions', CRAB_PAL_AGENT_CLI_VERSION);
         return {
             pathToClaudeCodeExecutable: join(baseDir, 'claude-agent-sdk', 'cli.js'),
             // Use the compiled binary itself as the runtime via BUN_BE_BUN=1

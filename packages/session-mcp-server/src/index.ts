@@ -33,6 +33,9 @@ import {
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { isDeveloperFeedbackEnabled } from '@crabpal/shared/feature-flags';
+import { applyLegacyCraftEnv } from '@crabpal/shared/utils/legacy-env';
+
+applyLegacyCraftEnv();
 // Import from session-tools-core
 import {
   type SessionToolContext,
@@ -242,7 +245,7 @@ function createCodexContext(config: SessionConfig): SessionToolContext {
 
     // Developer feedback: write one JSON file per entry to {configDir}/feedback/
     submitFeedback: (feedback) => {
-      const configDir = process.env.CRAFT_CONFIG_DIR || join(workspaceRootPath, '..', '..');
+      const configDir = process.env.CRAB_PAL_CONFIG_DIR || join(workspaceRootPath, '..', '..');
       const feedbackDir = join(configDir, 'feedback');
       mkdirSync(feedbackDir, { recursive: true });
       const filePath = join(feedbackDir, `${feedback.id}.json`);
@@ -365,7 +368,7 @@ async function handleCallLlm(
   }
 
   // Fallback path: HTTP callback to agent (for Copilot where PreToolUse doesn't fire for MCP tools).
-  // Uses callbackPort from CLI arg (--callback-port) or env var (CRAFT_LLM_CALLBACK_PORT).
+  // Uses callbackPort from CLI arg (--callback-port) or env var (CRAB_PAL_LLM_CALLBACK_PORT).
   if (config.callbackPort) {
     try {
       const resp = await fetch(`http://127.0.0.1:${config.callbackPort}/call-llm`, {
@@ -388,7 +391,7 @@ async function handleCallLlm(
 
   return errorResponse(
     'call_llm requires either PreToolUse intercept (_precomputedResult) or ' +
-    'HTTP callback (CRAFT_LLM_CALLBACK_PORT). Neither is available.'
+    'HTTP callback (CRAB_PAL_LLM_CALLBACK_PORT). Neither is available.'
   );
 }
 
@@ -441,7 +444,7 @@ async function handleSpawnSession(
 
   return errorResponse(
     'spawn_session requires either PreToolUse intercept (_precomputedResult) or ' +
-    'HTTP callback (CRAFT_LLM_CALLBACK_PORT). Neither is available.'
+    'HTTP callback (CRAB_PAL_LLM_CALLBACK_PORT). Neither is available.'
   );
 }
 
@@ -499,7 +502,7 @@ async function main() {
     workspaceRootPath,
     plansFolderPath,
     // CLI arg takes priority, env var as fallback (Copilot CLI may not forward env to subprocesses)
-    callbackPort: callbackPort || process.env.CRAFT_LLM_CALLBACK_PORT,
+    callbackPort: callbackPort || process.env.CRAB_PAL_LLM_CALLBACK_PORT,
   };
 
   // Create the Codex context
