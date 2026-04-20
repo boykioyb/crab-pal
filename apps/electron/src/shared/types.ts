@@ -659,6 +659,9 @@ export interface ElectronAPI {
     utilization?: number
   }>>
 
+  // Context window breakdown (for /context modal)
+  getContextBreakdown(sessionId: string): Promise<import('@crabpal/shared/agent').ContextBreakdown | null>
+
   // Legacy import (craft-agent → crabpal)
   legacyImportDetect(): Promise<import('@crabpal/shared/config').LegacyPresence>
   legacyImportPreview(

@@ -377,6 +377,9 @@ export const CHANNEL_MAP = {
   getAccountInfo: invoke(RPC_CHANNELS.account.GET_INFO),
   getRateLimitInfo: invoke(RPC_CHANNELS.account.GET_RATE_LIMIT),
 
+  // Context window breakdown
+  getContextBreakdown: invoke(RPC_CHANNELS.context.GET_BREAKDOWN),
+
   // Legacy import (craft-agent → crabpal)
   legacyImportDetect: invoke(RPC_CHANNELS.legacyImport.DETECT),
   legacyImportPreview: invoke(RPC_CHANNELS.legacyImport.PREVIEW),

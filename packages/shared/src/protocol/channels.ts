@@ -368,6 +368,9 @@ export const RPC_CHANNELS = {
     GET_INFO: 'account:getInfo',
     GET_RATE_LIMIT: 'account:getRateLimit',
   },
+  context: {
+    GET_BREAKDOWN: 'context:getBreakdown',
+  },
   automations: {
     GET: 'automations:get',
     TEST: 'automations:test',

@@ -146,3 +146,13 @@ export type {
 
 // Re-export skill plugin constant (used by renderer for mention qualification)
 export { AGENTS_PLUGIN_NAME } from '../../skills/types.ts';
+
+// Context Breakdown (for /context modal)
+export {
+  buildContextBreakdown,
+  estimateTokens,
+  type ContextBreakdown,
+  type ContextBucket,
+  type ContextBucketId,
+  type BuildContextBreakdownInput,
+} from './context-breakdown.ts';

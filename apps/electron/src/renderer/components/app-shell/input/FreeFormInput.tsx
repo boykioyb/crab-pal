@@ -52,6 +52,7 @@ import { cn } from '@/lib/utils'
 import { isMac, PATH_SEP, getPathBasename } from '@/lib/platform'
 import { applySmartTypography } from '@/lib/smart-typography'
 import { AttachmentPreview } from '../AttachmentPreview'
+import { ContextBreakdownModal } from '../ContextBreakdownModal'
 import { ANTHROPIC_MODELS, getModelShortName, getModelDisplayName, getModelContextWindow, type ModelDefinition } from '@config/models'
 import { resolveEffectiveConnectionSlug, isCompatProvider } from '@config/llm-connections'
 import { useOptionalAppShellContext } from '@/context/AppShellContext'
@@ -441,6 +442,7 @@ export function FreeFormInput({
   const [input, setInput] = React.useState(inputValue ?? '')
   const [attachments, setAttachments] = React.useState<FileAttachment[]>([])
   const [showAccountModal, setShowAccountModal] = React.useState(false)
+  const [showContextModal, setShowContextModal] = React.useState(false)
 
   // Ref to track current attachments for use in event handlers (avoids stale closure issues)
   const attachmentsRef = React.useRef<FileAttachment[]>([])
@@ -858,21 +860,13 @@ export function FreeFormInput({
       setShowAccountModal(true)
     }
     else if (commandId === 'context') {
-      const used = contextStatus?.inputTokens ?? 0
-      const total = contextStatus?.contextWindow
-      if (used === 0 && !total) {
-        toast('No context data yet', { description: 'Start a conversation to see context usage.' })
+      if (!sessionId) {
+        toast('No active session', { description: 'Start a conversation to see context usage.' })
       } else {
-        const pct = total ? Math.round((used / total) * 100) : null
-        const usedFmt = used.toLocaleString()
-        const totalFmt = total ? total.toLocaleString() : '—'
-        toast('Context Window', {
-          description: `${usedFmt} / ${totalFmt} tokens used${pct !== null ? ` (${pct}%)` : ''}`,
-          duration: 4000,
-        })
+        setShowContextModal(true)
       }
     }
-  }, [onPermissionModeChange, isProcessing, onSubmit, navigate, contextStatus])
+  }, [onPermissionModeChange, isProcessing, onSubmit, navigate, sessionId])
 
   // Handle folder selection from slash command menu
   const handleSlashFolderSelect = React.useCallback((path: string) => {
@@ -2297,6 +2291,13 @@ Model
       </div>
     </form>
     <AccountUsageModal open={showAccountModal} onClose={() => setShowAccountModal(false)} connectionSlug={effectiveConnection} />
+    <ContextBreakdownModal
+      open={showContextModal}
+      onClose={() => setShowContextModal(false)}
+      sessionId={sessionId}
+      liveInputTokens={contextStatus?.inputTokens}
+      liveContextWindow={contextStatus?.contextWindow}
+    />
     </>
   )
 }

@@ -242,6 +242,9 @@ export const REMOTE_ELIGIBLE_CHANNELS = new Set<string>([
   RPC_CHANNELS.server.STATUS_CHANGED,
   RPC_CHANNELS.server.HOME_DIR,
 
+  // context — per-session context window breakdown (reads session state)
+  RPC_CHANNELS.context.GET_BREAKDOWN,
+
   // sessions — core session runtime
   RPC_CHANNELS.sessions.GET,
   RPC_CHANNELS.sessions.GET_UNREAD_SUMMARY,
