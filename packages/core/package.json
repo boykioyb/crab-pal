@@ -1,6 +1,6 @@
 {
   "name": "@crabpal/core",
-  "version": "0.8.3",
+  "version": "0.0.1",
   "license": "Apache-2.0",
   "description": "Core types, storage, and agent logic for CrabPal",
   "type": "module",

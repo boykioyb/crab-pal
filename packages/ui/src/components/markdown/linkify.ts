@@ -21,7 +21,14 @@ const FILE_PATH_PRETEST_REGEX = new RegExp(FILE_PATH_REGEX_SOURCE, 'i')
 // File-path regex for markdown anchor targets (entire href/text value)
 // Used by Markdown.tsx click handler to route file links to onFileClick.
 const FILE_PATH_TARGET_REGEX = new RegExp(
-  `^(?!https?://|mailto:|ftp://|data:)(?:/|~/|\./|\.\./|[A-Za-z0-9_][\\w\\-./@]*)[\\w\\-./@]*\\.(?:${FILE_EXTENSIONS_PATTERN})$`,
+  `^(?!https?://|mailto:|ftp://|data:)` +
+  `(?:` +
+    `(?:/|~/)[\\w\\-./@]*` +
+    `|` +
+    `(?:\\./|\\.\\./)[\\w\\-./@]*\\.(?:${FILE_EXTENSIONS_PATTERN})` +
+    `|` +
+    `[A-Za-z0-9_][\\w\\-./@]*\\.(?:${FILE_EXTENSIONS_PATTERN})` +
+  `)$`,
   'i'
 )
 
@@ -82,8 +89,8 @@ function isInsideCode(pos: number, ranges: CodeRange[]): boolean {
 function findMarkdownLinkRanges(text: string): CodeRange[] {
   const ranges: CodeRange[] = []
 
-  // Match [text](url) — inline links
-  const inlineLinkRegex = /\[(?:[^\[\]]|\\\[|\\\])*\]\([^)]*\)/g
+  // Match [text](url) — inline links (allows one level of nested brackets in text)
+  const inlineLinkRegex = /\[(?:[^\[\]]|\[[^\[\]]*\])*\]\([^)]*\)/g
   let match
   while ((match = inlineLinkRegex.exec(text)) !== null) {
     ranges.push({ start: match.index, end: match.index + match[0].length })

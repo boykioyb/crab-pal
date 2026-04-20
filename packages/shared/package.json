@@ -1,6 +1,6 @@
 {
   "name": "@crabpal/shared",
-  "version": "0.8.3",
+  "version": "0.0.1",
   "license": "Apache-2.0",
   "description": "Shared business logic for CrabPal - agent, auth, config, credentials, MCP integration",
   "type": "module",
