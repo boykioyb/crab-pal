@@ -247,7 +247,7 @@ export function getDefaultOptions(envOverrides?: Record<string, string>): Partia
     }
 
     if (typeof CRAB_PAL_AGENT_CLI_VERSION !== 'undefined' && CRAB_PAL_AGENT_CLI_VERSION != null) {
-        const baseDir = join(homedir(), '.local', 'share', 'craft', 'versions', CRAB_PAL_AGENT_CLI_VERSION);
+        const baseDir = join(homedir(), '.local', 'share', 'crabpal', 'versions', CRAB_PAL_AGENT_CLI_VERSION);
         return {
             pathToClaudeCodeExecutable: join(baseDir, 'claude-agent-sdk', 'cli.js'),
             // Use the compiled binary itself as the runtime via BUN_BE_BUN=1

@@ -160,7 +160,7 @@ if (isDebugMode) {
   if (!bundledUvExists) {
     mainLog.warn('Bundled uv binary missing, CLI document tools may fail unless uv is available on PATH.', {
       expectedUvPath: uvBinary,
-      usingCraftUv: process.env.CRAB_PAL_UV,
+      usingCrabpalUv: process.env.CRAB_PAL_UV,
     })
   }
 

@@ -1,8 +1,8 @@
 {
-  "name": "craft-agent",
+  "name": "crabpal",
   "version": "0.0.1",
   "license": "Apache-2.0",
-  "description": "Claude Code-like agent for Craft documents",
+  "description": "Claude Code-like agent — CrabPal",
   "type": "module",
   "private": true,
   "trustedDependencies": [
@@ -57,7 +57,7 @@
     "electron:dev": "bun run scripts/electron-dev.ts",
     "electron:dev:terminal": "bun run scripts/electron-dev.ts --terminal",
     "electron:dev:menu": "bash scripts/electron-dev.sh",
-    "electron:dev:logs": "pgrep -f 'tail -f.*@craft-agent/electron/main.log' > /dev/null || osascript -e \"tell application \\\"Terminal\\\" to do script \\\"$PWD/scripts/tail-electron-logs.sh\\\"\"",
+    "electron:dev:logs": "pgrep -f 'tail -f.*@crabpal/electron/main.log' > /dev/null || osascript -e \"tell application \\\"Terminal\\\" to do script \\\"$PWD/scripts/tail-electron-logs.sh\\\"\"",
     "sync-secrets": "bash scripts/sync-secrets.sh",
     "fresh-start": "bun run scripts/fresh-start.ts",
     "fresh-start:token": "bun run scripts/fresh-start.ts --token-only",

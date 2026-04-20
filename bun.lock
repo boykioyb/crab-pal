@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "craft-agent",
+      "name": "crabpal",
       "dependencies": {
         "@anthropic-ai/claude-agent-sdk": "^0.2.111",
         "@dnd-kit/dom": "^0.4.0-beta-20260227032529",
@@ -116,7 +116,7 @@
       "name": "@crabpal/cli",
       "version": "0.8.3",
       "bin": {
-        "craft-cli": "src/index.ts",
+        "crabpal": "src/index.ts",
       },
       "dependencies": {
         "@crabpal/server-core": "workspace:*",
@@ -238,7 +238,7 @@
       "name": "@crabpal/server",
       "version": "0.8.3",
       "bin": {
-        "craft-server": "src/index.ts",
+        "crabpal-server": "src/index.ts",
       },
       "dependencies": {
         "@crabpal/core": "workspace:*",
