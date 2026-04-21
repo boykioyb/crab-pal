@@ -73,6 +73,11 @@ jobs:
             apps/electron/release/CrabPal-x64.exe \
             --repo "${{ github.repository }}" \
             --clobber
+          if [ -f "apps/electron/release/latest.yml" ]; then
+            gh release upload "$TAG" apps/electron/release/latest.yml \
+              --repo "${{ github.repository }}" \
+              --clobber
+          fi
 
   build-linux:
     runs-on: ubuntu-latest
@@ -96,3 +101,8 @@ jobs:
           gh release upload "$TAG" "$APPIMAGE" \
             --repo "${{ github.repository }}" \
             --clobber
+          if [ -f "apps/electron/release/latest-linux.yml" ]; then
+            gh release upload "$TAG" apps/electron/release/latest-linux.yml \
+              --repo "${{ github.repository }}" \
+              --clobber
+          fi

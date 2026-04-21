@@ -1,6 +1,6 @@
 {
   "name": "@crabpal/server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Standalone headless CrabPal server (Bun runtime)",
   "type": "module",
   "main": "src/index.ts",

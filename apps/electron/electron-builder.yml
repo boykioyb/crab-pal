@@ -70,10 +70,11 @@ files:
 extraMetadata:
   main: dist/main.cjs
 
-# Auto-update: electron-updater fetches from this URL for update manifests (.yml files)
+# Auto-update: electron-updater fetches update manifests from GitHub Releases
 publish:
-  provider: generic
-  url: https://crabpal.app/electron/latest
+  provider: github
+  owner: boykioyb
+  repo: crab-pal
 
 # Disable ASAR to avoid decompression overhead and click delays
 asar: false

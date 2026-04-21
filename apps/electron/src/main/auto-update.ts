@@ -2,8 +2,8 @@
  * Auto-update module using electron-updater
  *
  * Handles checking for updates, downloading, and installing via the standard
- * electron-updater library. Updates are served from https://crabpal.app/electron/latest
- * using the generic provider (YAML manifests + binaries on R2/S3).
+ * electron-updater library. Updates are served from GitHub Releases of
+ * boykioyb/crab-pal.
  *
  * Platform behavior:
  * - macOS: Downloads zip, extracts and swaps app bundle atomically
