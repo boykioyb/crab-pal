@@ -12,7 +12,7 @@
 [![Runtime: Bun](https://img.shields.io/badge/runtime-Bun-000000.svg)](https://bun.sh/)
 [![Made with TypeScript](https://img.shields.io/badge/made%20with-TypeScript-3178c6.svg)](https://www.typescriptlang.org/)
 
-`<sub>`Screenshots and a walk‑through video are on the way — follow the repo to get notified.`</sub>`
+<img width="788" height="212" alt="CleanShot 2026-04-21 at 13 55 10" src="https://github.com/user-attachments/assets/4d15ec08-ad2e-4a81-bbbd-fea27436d73c" />
 
 </div>
 
