@@ -11,7 +11,14 @@
 
 import { existsSync, readFileSync, writeFileSync, renameSync, unlinkSync, appendFileSync, mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { CONFIG_DIR } from './config/paths.ts';
+import { homedir } from 'node:os';
+
+// Inlined from ./config/paths.ts — the interceptor is a hand-copied flat bundle
+// in the packaged app, so we avoid importing sibling modules that aren't shipped.
+const CONFIG_DIR =
+  process.env.CRABPAL_CONFIG_DIR ||
+  process.env.CRAB_PAL_CONFIG_DIR ||
+  join(homedir(), '.crabpal');
 
 // ============================================================================
 // CONSTANTS
