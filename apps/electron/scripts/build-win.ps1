@@ -363,7 +363,9 @@ while (-not $builderSuccess -and $builderRetry -lt $maxBuilderRetries) {
         Start-Sleep -Seconds 1
     }
 
-    npx electron-builder --win --x64 2>&1 | Tee-Object -Variable builderOutput
+    # --publish never: generate update manifest (latest.yml) locally; the CI
+    # workflow uploads artifacts to the GitHub Release explicitly.
+    npx electron-builder --win --x64 --publish never 2>&1 | Tee-Object -Variable builderOutput
 
     if ($LASTEXITCODE -eq 0) {
         $builderSuccess = $true

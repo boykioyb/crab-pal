@@ -146,7 +146,9 @@ cd "$ELECTRON_DIR"
 
 # Run electron-builder
 # Note: electron-builder may build both archs due to config, but we only use the requested one
-npx electron-builder --linux --${ARCH}
+# --publish never: generate update manifest (latest-linux.yml) locally; the CI
+# workflow uploads artifacts to the GitHub Release explicitly.
+npx electron-builder --linux --${ARCH} --publish never
 
 # 8. Verify the AppImage was built
 # electron-builder uses Linux-style arch names: x86_64 for x64, aarch64 for arm64
