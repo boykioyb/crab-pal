@@ -12,10 +12,9 @@
 [![Runtime: Bun](https://img.shields.io/badge/runtime-Bun-000000.svg)](https://bun.sh/)
 [![Made with TypeScript](https://img.shields.io/badge/made%20with-TypeScript-3178c6.svg)](https://www.typescriptlang.org/)
 
-<img width="788" height="212" alt="CleanShot 2026-04-21 at 13 55 10" src="https://github.com/user-attachments/assets/4d15ec08-ad2e-4a81-bbbd-fea27436d73c" />
-<img width="1638" height="1122" alt="CleanShot 2026-04-22 at 11 06 11" src="https://github.com/user-attachments/assets/7aa11ae6-b3c9-4cc3-b95f-924d540a273d" />
-<img width="1638" height="1122" alt="CleanShot 2026-04-22 at 11 06 23" src="https://github.com/user-attachments/assets/5ffde015-680e-42e9-94e3-a4b877cf1e23" />
-<img width="1638" height="1122" alt="CleanShot 2026-04-22 at 11 06 42" src="https://github.com/user-attachments/assets/b16b34d6-91ea-402c-aba4-1771e37af503" />
+<img width="1638" height="1122" alt="CleanShot 2026-04-22 at 11 31 55" src="https://github.com/user-attachments/assets/80efde5c-aee1-4b85-b382-38806cac965f" />
+<img width="1638" height="1122" alt="CleanShot 2026-04-22 at 11 32 12" src="https://github.com/user-attachments/assets/efbc4cd4-a04f-4635-993f-5e179e761ad6" />
+<img width="1638" height="1122" alt="CleanShot 2026-04-22 at 11 32 25" src="https://github.com/user-attachments/assets/01d15f97-eae6-4011-8630-cc6a723cc374" />
 
 </div>
 
