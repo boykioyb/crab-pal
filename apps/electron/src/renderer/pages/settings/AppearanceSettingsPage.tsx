@@ -131,6 +131,18 @@ export default function AppearanceSettingsPage() {
     storage.set(storage.KEYS.showConnectionIcons, checked)
   }, [])
 
+  const [reduceMotion, setReduceMotion] = useState(() =>
+    storage.get(storage.KEYS.reduceMotion, false)
+  )
+  const handleReduceMotionChange = useCallback((checked: boolean) => {
+    setReduceMotion(checked)
+    storage.set(storage.KEYS.reduceMotion, checked)
+    document.documentElement.classList.toggle('reduce-motion', checked)
+  }, [])
+  useEffect(() => {
+    document.documentElement.classList.toggle('reduce-motion', reduceMotion)
+  }, [reduceMotion])
+
   // Rich tool descriptions toggle (persisted in config.json, read by SDK subprocess)
   const [richToolDescriptions, setRichToolDescriptions] = useState(true)
   useEffect(() => {
@@ -345,6 +357,12 @@ export default function AppearanceSettingsPage() {
                     description="Add action names and intent descriptions to all tool calls. Provides richer activity context in sessions."
                     checked={richToolDescriptions}
                     onCheckedChange={handleRichToolDescriptionsChange}
+                  />
+                  <SettingsToggle
+                    label="Reduce motion"
+                    description="Disable decorative animations and shimmer effects to lower GPU usage."
+                    checked={reduceMotion}
+                    onCheckedChange={handleReduceMotionChange}
                   />
                 </SettingsCard>
               </SettingsSection>

@@ -56,6 +56,7 @@ export const KEYS = {
 
   // Appearance
   showConnectionIcons: 'show-connection-icons',
+  reduceMotion: 'reduce-motion',
 
   // What's New
   whatsNewLastSeenVersion: 'whats-new-last-seen-version',

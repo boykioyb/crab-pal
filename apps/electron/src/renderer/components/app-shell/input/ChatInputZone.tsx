@@ -7,7 +7,6 @@ import type { SessionStatus } from '@/config/session-status-config'
 import type { BackgroundTask } from '../ActiveTasksBar'
 import { ActiveOptionBadges } from '../ActiveOptionBadges'
 import { InputContainer } from './InputContainer'
-import { CrabWalker } from './CrabWalker'
 
 interface ChatInputZoneProps {
   compactMode?: boolean
@@ -70,7 +69,6 @@ export function ChatInputZone({
       compactMode ? 'px-2 pb-3' : 'px-4 @xs/panel:px-5 pb-5',
       className,
     )}>
-      <CrabWalker className="mb-1" />
       <InputContainer
         {...inputProps}
         compactMode={compactMode}

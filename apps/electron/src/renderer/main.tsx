@@ -8,7 +8,13 @@ import App from './App'
 import { ThemeProvider } from './context/ThemeContext'
 import { windowWorkspaceIdAtom } from './atoms/sessions'
 import { Toaster } from '@/components/ui/sonner'
+import * as storage from '@/lib/local-storage'
 import './index.css'
+
+// Apply persisted reduce-motion preference before first paint.
+if (storage.get(storage.KEYS.reduceMotion, false)) {
+  document.documentElement.classList.add('reduce-motion')
+}
 
 // Known-harmless console messages that should NOT be sent to Sentry.
 // These are dev-mode noise or expected warnings that aren't actionable.

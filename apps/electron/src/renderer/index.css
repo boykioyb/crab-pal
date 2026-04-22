@@ -784,16 +784,16 @@ html[data-scenic] .shadow-strong > * {
 
 /* Scenic mode: Popovers get glass effect too */
 html[data-scenic] .popover-styled {
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Scenic mode: Fullscreen overlay background gets glass effect
    Applied to the AI response fullscreen view background so it blends
    with the scenic background image when viewing expanded content. */
 html[data-scenic] .fullscreen-overlay-background {
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 html[data-scenic]:not(.dark) .fullscreen-overlay-background {
@@ -1085,6 +1085,30 @@ html.dark[data-scenic] .fullscreen-overlay-background {
 
 .animate-shake {
   animation: shake 0.4s ease-in-out;
+}
+
+/* =============================================================================
+   REDUCE MOTION
+
+   Toggled via the "Reduce motion" setting (html.reduce-motion) or the OS
+   accessibility preference. Shrinks animations/transitions to effectively zero
+   to lower GPU load without breaking layout that depends on final state.
+============================================================================= */
+
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @keyframes editPopoverFadeIn {
