@@ -13,13 +13,12 @@ import {
   SettingsRow,
 } from '@/components/settings'
 import { useUpdateChecker } from '@/hooks/useUpdateChecker'
+import { GITHUB_REPO_URL } from '@crabpal/shared/branding'
 
 export const meta: DetailsPageMeta = {
   navigator: 'settings',
   slug: 'about',
 }
-
-const GITHUB_URL = 'https://github.com/boykioyb/crab-pal'
 
 export default function AboutSettingsPage() {
   const updateChecker = useUpdateChecker()
@@ -35,7 +34,7 @@ export default function AboutSettingsPage() {
   }, [updateChecker])
 
   const handleOpenGithub = useCallback(() => {
-    window.electronAPI?.openUrl(GITHUB_URL)
+    window.electronAPI?.openUrl(GITHUB_REPO_URL)
   }, [])
 
   return (
@@ -104,7 +103,7 @@ export default function AboutSettingsPage() {
                       onClick={handleOpenGithub}
                       className="text-primary hover:underline text-sm"
                     >
-                      {GITHUB_URL}
+                      {GITHUB_REPO_URL}
                     </button>
                   </SettingsRow>
                 </SettingsCard>

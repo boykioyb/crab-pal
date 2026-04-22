@@ -30,9 +30,11 @@ export default defineConfig({
     port: 5174, // Different from Electron dev server
     open: true,
     proxy: {
-      // Proxy API requests to production R2 during local dev
+      // Proxy API requests to production R2 during local dev.
+      // No hosted backend is currently available — set CRABPAL_VIEWER_API_TARGET
+      // to a reachable host if you need /s/api to resolve during dev.
       '/s/api': {
-        target: 'https://crabpal.app',
+        target: process.env.CRABPAL_VIEWER_API_TARGET ?? 'https://github.com/boykioyb/crab-pal',
         changeOrigin: true,
         secure: true,
       },

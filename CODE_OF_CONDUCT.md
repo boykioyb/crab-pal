@@ -15,7 +15,7 @@ We expect all participants to:
 
 ## Enforcement
 
-Instances of unacceptable behavior may be reported to: conduct@crabpal.app
+Instances of unacceptable behavior may be reported by opening a private report via [GitHub Security Advisories](https://github.com/boykioyb/crab-pal/security/advisories/new) (used as a private channel for sensitive reports) or by contacting a maintainer directly through their GitHub profile.
 
 All complaints will be reviewed and investigated promptly and fairly.
 

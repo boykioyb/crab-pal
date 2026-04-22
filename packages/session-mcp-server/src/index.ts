@@ -33,6 +33,7 @@ import {
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { isDeveloperFeedbackEnabled } from '@crabpal/shared/feature-flags';
+import { DOCS_MCP_URL as DEFAULT_DOCS_MCP_URL } from '@crabpal/shared/branding';
 // Import from session-tools-core
 import {
   type SessionToolContext,
@@ -272,7 +273,9 @@ function createSessionTools(includeDeveloperFeedback: boolean): Tool[] {
 // CrabPal Docs Upstream Proxy
 // ============================================================
 
-const DOCS_MCP_URL = 'https://crabpal.app/docs/mcp';
+// No hosted docs MCP server by default (see @crabpal/shared/branding). Set the
+// DOCS_MCP_URL env var to a reachable endpoint to re-enable the upstream docs proxy.
+const DOCS_MCP_URL = process.env.DOCS_MCP_URL ?? DEFAULT_DOCS_MCP_URL;
 
 /** Cached upstream client + tool list */
 let docsClient: Client | null = null;
@@ -283,6 +286,12 @@ let docsTools: Tool[] = [];
  * Falls back gracefully if the server is unreachable (tools will just be empty).
  */
 async function connectDocsUpstream(): Promise<void> {
+  if (!DOCS_MCP_URL) {
+    docsClient = null;
+    docsTools = [];
+    return;
+  }
+
   try {
     const client = new Client(
       { name: 'crabpal-session-proxy', version: '1.0.0' },

@@ -3,7 +3,11 @@
  * Summaries provide quick context; "Learn more" opens the full docs.
  */
 
-const DOC_BASE_URL = 'https://crabpal.app/docs'
+import { DOCS_URL } from '../branding.ts'
+
+// No hosted docs site yet — all feature links resolve to the GitHub README,
+// which is the canonical source of documentation until a docs site is online.
+const DOC_BASE_URL = DOCS_URL
 
 export type DocFeature =
   | 'sources'
@@ -111,10 +115,12 @@ export const DOCS: Record<DocFeature, DocInfo> = {
 }
 
 /**
- * Get the full documentation URL for a feature
+ * Get the full documentation URL for a feature.
+ * Until a dedicated docs site ships, every feature resolves to the GitHub README.
+ * Per-feature `path` values are kept for future use when a docs site goes live.
  */
-export function getDocUrl(feature: DocFeature): string {
-  return `${DOC_BASE_URL}${DOCS[feature].path}`
+export function getDocUrl(_feature: DocFeature): string {
+  return DOC_BASE_URL
 }
 
 /**

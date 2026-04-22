@@ -8,7 +8,7 @@ We take security seriously. If you discover a security vulnerability in CrabPal,
 
 **Please do NOT report security vulnerabilities through public GitHub issues.**
 
-Instead, please send an email to: **security@crabpal.app**
+Instead, please open a private report via [GitHub Security Advisories](https://github.com/boykioyb/crab-pal/security/advisories/new).
 
 Include the following information:
 - Description of the vulnerability

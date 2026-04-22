@@ -6,6 +6,7 @@ import { DOC_REFS, APP_ROOT } from '../docs/index.ts';
 import { PERMISSION_MODE_CONFIG } from '../agent/mode-types.ts';
 import { FEATURE_FLAGS } from '../feature-flags.ts';
 import { APP_VERSION } from '../version/index.ts';
+import { CO_AUTHOR_EMAIL } from '../branding.ts';
 import { readPluginName } from '../utils/workspace.ts';
 import { globSync } from 'glob';
 import os from 'os';
@@ -563,7 +564,7 @@ ${includeCoAuthoredBy ? `## Git Conventions
 When creating git commits, include CrabPal as a co-author:
 
 \`\`\`
-Co-Authored-By: CrabPal <agents-noreply@crabpal.app>
+Co-Authored-By: CrabPal <${CO_AUTHOR_EMAIL}>
 \`\`\`
 ` : ''}## Permission Modes
 

@@ -75,13 +75,13 @@ Everything you see — skills, sources, themes, statuses, permissions, automatio
 **macOS / Linux**
 
 ```bash
-curl -fsSL https://crabpal.app/install-app.sh | bash
+curl -fsSL https://raw.githubusercontent.com/boykioyb/crab-pal/main/scripts/install-app.sh | bash
 ```
 
 **Windows (PowerShell)**
 
 ```powershell
-irm https://crabpal.app/install-app.ps1 | iex
+irm https://raw.githubusercontent.com/boykioyb/crab-pal/main/scripts/install-app.ps1 | iex
 ```
 
 ### Build from source
@@ -548,7 +548,7 @@ By contributing, you agree that your contributions will be licensed under the Ap
 
 ### Reporting vulnerabilities
 
-**Please do not report security issues through public GitHub issues.** Email `security@crabpal.app` with a description, reproduction steps, and potential impact. Full policy: [SECURITY.md](SECURITY.md).
+**Please do not report security issues through public GitHub issues.** Open a private report via [GitHub Security Advisories](https://github.com/boykioyb/crab-pal/security/advisories/new) with a description, reproduction steps, and potential impact. Full policy: [SECURITY.md](SECURITY.md).
 
 ### Local MCP server isolation
 

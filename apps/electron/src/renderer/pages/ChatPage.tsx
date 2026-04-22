@@ -23,6 +23,7 @@ import { routes } from '@/lib/navigate'
 import { ensureSessionMessagesLoadedAtom, loadedSessionsAtom, sessionMetaMapAtom } from '@/atoms/sessions'
 import { projectByIdAtom } from '@/atoms/projects'
 import { getEffectiveWorkingDirectory } from '@crabpal/core/utils'
+import { GITHUB_README_URL } from '@crabpal/shared/branding'
 import { getSessionTitle } from '@/utils/session'
 // Model resolution: connection.defaultModel (no hardcoded defaults)
 import { resolveEffectiveConnectionSlug, isSessionConnectionUnavailable } from '@config/llm-connections'
@@ -482,7 +483,7 @@ const ChatPage = React.memo(function ChatPage({ sessionId }: ChatPageProps) {
               <span className="flex-1">Stop Sharing</span>
             </StyledDropdownMenuItem>
             <StyledDropdownMenuSeparator />
-            <StyledDropdownMenuItem onClick={() => window.electronAPI.openUrl('https://crabpal.app/docs/go-further/sharing')}>
+            <StyledDropdownMenuItem onClick={() => window.electronAPI.openUrl(GITHUB_README_URL)}>
               <Info className="h-3.5 w-3.5" />
               <span className="flex-1">Learn More</span>
             </StyledDropdownMenuItem>
@@ -496,7 +497,7 @@ const ChatPage = React.memo(function ChatPage({ sessionId }: ChatPageProps) {
               <span className="flex-1">Share Online</span>
             </StyledDropdownMenuItem>
             <StyledDropdownMenuSeparator />
-            <StyledDropdownMenuItem onClick={() => window.electronAPI.openUrl('https://crabpal.app/docs/go-further/sharing')}>
+            <StyledDropdownMenuItem onClick={() => window.electronAPI.openUrl(GITHUB_README_URL)}>
               <Info className="h-3.5 w-3.5" />
               <span className="flex-1">Learn More</span>
             </StyledDropdownMenuItem>

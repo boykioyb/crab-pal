@@ -6,9 +6,9 @@
   "private": true,
   "author": {
     "name": "Boykioyb",
-    "email": "support@crabpal.app"
+    "email": "boykioyb@users.noreply.github.com"
   },
-  "homepage": "https://crabpal.app",
+  "homepage": "https://github.com/boykioyb/crab-pal",
   "license": "Apache-2.0",
   "type": "module",
   "engines": {

@@ -5,6 +5,7 @@ import type { MenuItem } from '../shared/menu-schema'
 import type { WindowManager } from './window-manager'
 import type { EventSink } from '@crabpal/server-core/transport'
 import { mainLog } from './logger'
+import { GITHUB_README_URL } from '@crabpal/shared/branding'
 
 type ClientResolver = (webContentsId: number) => string | undefined
 
@@ -232,7 +233,7 @@ export async function rebuildMenu(): Promise<void> {
       submenu: [
         {
           label: 'Help & Documentation',
-          click: () => shell.openExternal('https://crabpal.app/docs')
+          click: () => shell.openExternal(GITHUB_README_URL)
         },
         {
           label: 'Keyboard Shortcuts',

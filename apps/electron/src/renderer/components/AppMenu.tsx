@@ -17,6 +17,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@crabpal/ui"
 import { CrabPalBrandMark } from "./icons/CrabPalBrandMark"
 import { SquarePenRounded } from "./icons/SquarePenRounded"
 import { TopBarButton } from "./ui/TopBarButton"
+import { GITHUB_README_URL } from "@crabpal/shared/branding"
 import {
   EDIT_MENU,
   VIEW_MENU,
@@ -265,7 +266,7 @@ export function AppMenu({
               Help
             </StyledDropdownMenuSubTrigger>
             <StyledDropdownMenuSubContent>
-              <StyledDropdownMenuItem onClick={() => window.electronAPI.openUrl('https://crabpal.app/docs')}>
+              <StyledDropdownMenuItem onClick={() => window.electronAPI.openUrl(GITHUB_README_URL)}>
                 <Icons.HelpCircle className="h-3.5 w-3.5" />
                 Help & Documentation
                 <Icons.ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />

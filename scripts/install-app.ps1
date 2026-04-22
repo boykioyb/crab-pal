@@ -1,10 +1,10 @@
 # CrabPal Windows Installer
-# Usage: irm https://crabpal.app/install-app.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/boykioyb/crab-pal/main/scripts/install-app.ps1 | iex
 
 & {
 $ErrorActionPreference = "Stop"
 
-$VERSIONS_URL = "https://crabpal.app/electron"
+$VERSIONS_URL = "https://github.com/boykioyb/crab-pal/releases/latest/download"
 $DOWNLOAD_DIR = "$env:TEMP\crabpal-install"
 $APP_NAME = "CrabPal"
 
@@ -29,11 +29,11 @@ Write-Info "Detected platform: $platform (arch: $arch)"
 # Create download directory
 New-Item -ItemType Directory -Force -Path $DOWNLOAD_DIR | Out-Null
 
-# Fetch YAML manifest directly from /electron/latest/ (no version endpoint needed)
+# Fetch YAML manifest directly from GitHub Releases latest/download (no version endpoint needed)
 Write-Info "Fetching release info..."
 $yamlPath = Join-Path $DOWNLOAD_DIR "latest.yml"
 try {
-    Invoke-WebRequest -Uri "$VERSIONS_URL/latest/latest.yml" -OutFile $yamlPath -UseBasicParsing
+    Invoke-WebRequest -Uri "$VERSIONS_URL/latest.yml" -OutFile $yamlPath -UseBasicParsing
 } catch {
     Write-Err "Failed to fetch release info: $_"
 }
@@ -111,7 +111,7 @@ if (-not $filename) {
     $filename = "CrabPal-$arch.exe"
 }
 
-$installerUrl = "$VERSIONS_URL/latest/$filename"
+$installerUrl = "$VERSIONS_URL/$filename"
 
 Write-Info "Expected sha512: $($checksum.Substring(0, 20))..."
 

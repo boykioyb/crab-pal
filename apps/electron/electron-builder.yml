@@ -196,7 +196,7 @@ nsis:
 linux:
   icon: resources/icon.png
   category: Utility
-  maintainer: "Boykioyb <support@crabpal.app>"
+  maintainer: "Boykioyb <boykioyb@users.noreply.github.com>"
   target:
     - target: AppImage
       arch:

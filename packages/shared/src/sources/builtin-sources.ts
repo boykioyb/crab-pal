@@ -11,6 +11,7 @@
  */
 
 import type { LoadedSource, FolderSourceConfig } from './types.ts';
+import { GITHUB_README_URL } from '../branding.ts';
 
 /**
  * Get all built-in sources for a workspace.
@@ -44,7 +45,8 @@ export function getDocsSource(workspaceId: string, workspaceRootPath: string): L
     type: 'mcp',
     mcp: {
       transport: 'http',
-      url: 'https://crabpal.app/docs/mcp',
+      // No hosted docs MCP server yet; placeholder so the source stays disabled.
+      url: GITHUB_README_URL,
       authType: 'none',
     },
     tagline: 'Search CrabPal documentation and source setup guides',

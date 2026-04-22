@@ -2,7 +2,7 @@
 
 set -e
 
-VERSIONS_URL="https://crabpal.app/electron"
+VERSIONS_URL="https://github.com/boykioyb/crab-pal/releases/latest/download"
 DOWNLOAD_DIR="$HOME/.crabpal/downloads"
 
 # Colors for output
@@ -164,9 +164,9 @@ info "Detected platform: $platform"
 mkdir -p "$DOWNLOAD_DIR"
 mkdir -p "$INSTALL_DIR"
 
-# Fetch YAML manifest directly from /electron/latest/ (no version endpoint needed)
+# Fetch YAML manifest directly from GitHub Releases latest/download (no version endpoint needed)
 info "Fetching release info..."
-manifest_yaml=$(download_file "$VERSIONS_URL/latest/$yml_file")
+manifest_yaml=$(download_file "$VERSIONS_URL/$yml_file")
 
 if [ -z "$manifest_yaml" ]; then
     error "Failed to fetch release info from $yml_file"
@@ -207,7 +207,7 @@ fi
 info "Expected sha512: ${checksum:0:20}..."
 
 # Download installer
-installer_url="$VERSIONS_URL/latest/$filename"
+installer_url="$VERSIONS_URL/$filename"
 installer_path="$DOWNLOAD_DIR/$filename"
 
 info "Downloading $filename..."
@@ -351,7 +351,7 @@ ELECTRON_CACHE_ALT="$HOME/.cache/@crabpal"
 # Verify AppImage exists
 if [ ! -f "$APPIMAGE_PATH" ]; then
     echo "Error: CrabPal not found at $APPIMAGE_PATH"
-    echo "Reinstall: curl -fsSL https://crabpal.app/install-app.sh | bash"
+    echo "Reinstall: curl -fsSL https://raw.githubusercontent.com/boykioyb/crab-pal/main/scripts/install-app.sh | bash"
     exit 1
 fi
 
