@@ -899,8 +899,9 @@ export class ClaudeAgent extends BaseAgent {
       // for OAuth the [1m] model suffix is the way. Use the suffix unconditionally
       // since it works for both auth paths. See: anthropics/claude-agent-sdk-typescript#238
       // Gated by enable1MContext in global config (~/.crabpal/config.json).
+      // Opt-in (default false) — the 1M beta requires Anthropic Tier 4+ (upstream #567).
       // The interceptor also reads this to strip the SDK-injected beta header.
-      const use1M = this.config.enable1MContext !== false;
+      const use1M = this.config.enable1MContext === true;
       const effectiveModel = use1M && getModelContextWindow(model) === 1_000_000
         ? `${model}[1m]`
         : model;

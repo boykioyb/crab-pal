@@ -18,12 +18,17 @@ export async function handleSetSessionLabels(
   try {
     let labels = args.labels;
 
-    // Resolve display names → IDs, reject unknown labels
+    // Resolve display names → IDs, reject unknown or mistyped labels.
+    // Supports valued entries (e.g. "priority::3") and surfaces per-entry
+    // reasons so the caller can fix each rejection precisely (upstream #566).
     if (ctx.resolveLabels) {
-      const { resolved, unknown, available } = ctx.resolveLabels(labels);
+      const { resolved, unknown, available, reasons } = ctx.resolveLabels(labels);
       if (unknown.length > 0) {
+        const reasonList = unknown
+          .map(u => `  - "${u}": ${reasons?.[u] ?? 'unknown label'}`)
+          .join('\n');
         return errorResponse(
-          `Unknown labels: ${unknown.join(', ')}. Available label IDs: ${available.join(', ')}`
+          `Rejected labels:\n${reasonList}\nAvailable label IDs: ${available.join(', ')}`
         );
       }
       labels = resolved;

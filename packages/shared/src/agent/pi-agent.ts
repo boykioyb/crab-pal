@@ -43,6 +43,7 @@ import { EventQueue } from './backend/event-queue.ts';
 
 // System prompt for CrabPal context
 import { getSystemPrompt } from '../prompts/system.ts';
+import { getCoAuthorPreference } from '../config/preferences.ts';
 
 // Credential manager for token storage
 import { getCredentialManager } from '../credentials/manager.ts';
@@ -1763,7 +1764,8 @@ export class PiAgent extends BaseAgent {
         this.config.workspace.rootPath,
         this.config.session?.workingDirectory,
         this.config.systemPromptPreset,
-        'CrabPal Backend' // backendName
+        'CrabPal Backend', // backendName
+        getCoAuthorPreference(), // respect user's includeCoAuthoredBy preference (upstream #576)
       );
 
       // Build context from sources
