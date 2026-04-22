@@ -683,6 +683,9 @@ export async function testBackendConnection(args: {
     await cm.setLlmApiKey(tempSlug, trimmedKey);
   }
 
+  // Hoisted so the outer catch can surface captured pi-agent stderr on failure.
+  let agentForStderr: unknown = null;
+
   try {
     const testModel = args.model;
     const providerType = args.connection?.providerType ?? getDefaultProviderType(args.provider);
@@ -747,6 +750,7 @@ export async function testBackendConnection(args: {
       hostRuntime: args.hostRuntime,
       providerOptions: { piAuthProvider: args.connection?.piAuthProvider },
     });
+    agentForStderr = agent;
 
     try {
       const timeoutMs = args.timeoutMs ?? 20000;
@@ -759,18 +763,32 @@ export async function testBackendConnection(args: {
 
       return text
         ? { success: true }
-        : { success: false, error: 'No response from provider. Check your API key.' };
+        : { success: false, error: withPiStderr(agent, 'No response from provider. Check your API key.') };
     } finally {
       agent.destroy();
     }
   } catch (error) {
+    const baseMsg = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: withPiStderr(agentForStderr, baseMsg),
     };
   } finally {
     await cm.deleteLlmApiKey(tempSlug).catch(() => {});
   }
+}
+
+/**
+ * Append any captured pi-agent subprocess stderr to an error message so
+ * connection-test failures expose the underlying cause instead of a bare
+ * "timed out" (upstream v0.8.10). No-op for non-pi backends.
+ */
+function withPiStderr(agent: unknown, baseMsg: string): string {
+  const getStderr = (agent as { getRecentStderr?: () => string } | null)?.getRecentStderr;
+  if (typeof getStderr !== 'function') return baseMsg;
+  const stderr = getStderr.call(agent)?.trim();
+  if (!stderr) return baseMsg;
+  return `${baseMsg}\n\nSubprocess stderr:\n${stderr}`;
 }
 
 // ============================================================
