@@ -89,6 +89,7 @@ function createMockContext(overrides: Partial<SessionListContextValue> = {}): Se
     onMarkUnread: () => {},
     onDelete: async () => true,
     onSelectSessionById: () => {},
+    onSelectGroupForItem: () => {},
     onOpenInNewWindow: () => {},
     onFocusZone: () => {},
     onKeyDown: () => {},
