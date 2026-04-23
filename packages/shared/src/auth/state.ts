@@ -247,10 +247,16 @@ export async function getValidClaudeOAuthToken(connectionSlug: string): Promise<
     return { accessToken: null };
   }
 
-  // Check if token is expired or about to expire
-  if (isTokenExpired(creds.expiresAt)) {
-    const expiresAtDate = creds.expiresAt ? new Date(creds.expiresAt).toISOString() : 'unknown';
-    debug(`[auth] Claude OAuth token expired (was: ${expiresAtDate}), attempting refresh`);
+  // Check if token is expired or about to expire. Treat a missing expiresAt as
+  // "needs refresh": Claude OAuth tokens always have a server-side expiry, so a
+  // stored credential without expiresAt is buggy state (older CrabPal versions
+  // dropped the field when the endpoint omitted expires_in). Forcing a refresh
+  // self-heals those credentials — the new expiresAt falls back to 1h via
+  // refreshClaudeToken.
+  const needsRefresh = creds.expiresAt === undefined || isTokenExpired(creds.expiresAt);
+  if (needsRefresh) {
+    const expiresAtDate = creds.expiresAt ? new Date(creds.expiresAt).toISOString() : 'MISSING';
+    debug(`[auth] Claude OAuth token needs refresh (expiresAt: ${expiresAtDate}), attempting refresh`);
 
     // Try to refresh if we have a refresh token
     if (creds.refreshToken) {

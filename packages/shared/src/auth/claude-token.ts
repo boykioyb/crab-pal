@@ -61,9 +61,18 @@ export async function refreshClaudeToken(refreshToken: string): Promise<{
     token_type?: string;
   };
 
-  // Log what we received from the API for debugging
-  const expiresAt = data.expires_in ? Date.now() + data.expires_in * 1000 : undefined;
-  debug(`[claude-token] Refresh response - expires_in: ${data.expires_in ?? 'NOT PROVIDED'}, calculated expiresAt: ${expiresAt ? new Date(expiresAt).toISOString() : 'undefined'}`);
+  // Anthropic's token endpoint should return expires_in (~8h), but we've seen
+  // it omit the field. Without an expiresAt, isTokenExpired() returns false
+  // forever and the token is never refreshed — producing 401s that the
+  // auto-refresh path cannot recover from. Fall back to 1h so the next refresh
+  // cycle kicks in well before any plausible server-side expiry.
+  const expiresIn = data.expires_in ?? 3600;
+  const expiresAt = Date.now() + expiresIn * 1000;
+  if (data.expires_in === undefined) {
+    debug(`[claude-token] Refresh response missing expires_in — defaulting to ${expiresIn}s so auto-refresh can fire`);
+  } else {
+    debug(`[claude-token] Refresh response - expires_in: ${data.expires_in}s, expiresAt: ${new Date(expiresAt).toISOString()}`);
+  }
 
   return {
     accessToken: data.access_token,

@@ -366,10 +366,14 @@ export async function exchangeClaudeCode(
 
     onStatus?.('Authentication successful!')
 
+    // Fall back to 1h when the endpoint omits expires_in — otherwise
+    // isTokenExpired() would return false forever and auto-refresh would never
+    // fire, leaving the subprocess holding a stale token until the server 401s.
+    const expiresIn = data.expires_in ?? 3600
     return {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
-      expiresAt: data.expires_in ? Date.now() + data.expires_in * 1000 : undefined,
+      expiresAt: Date.now() + expiresIn * 1000,
       scopes: data.scope ? data.scope.split(' ') : ['user:inference', 'user:profile'],
     }
   } catch (error) {

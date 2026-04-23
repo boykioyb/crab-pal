@@ -27,23 +27,20 @@ function resolveDebugMode(): boolean {
 
 export const isDebugMode = resolveDebugMode()
 
-// Configure transports based on debug mode
+// File logging is always on so packaged users can diagnose auth/session issues
+// via Settings → Logs. Console output stays gated on debug mode.
+log.transports.file.format = ({ message }) => [
+  JSON.stringify({
+    timestamp: message.date.toISOString(),
+    level: message.level,
+    scope: message.scope,
+    message: message.data,
+  }),
+]
+log.transports.file.maxSize = 5 * 1024 * 1024 // 5MB
+log.transports.file.level = isDebugMode ? 'debug' : 'info'
+
 if (isDebugMode) {
-  // JSON format for file (agent-parseable)
-  // Note: format expects (params: FormatParams) => any[], where params.message has the LogMessage fields
-  log.transports.file.format = ({ message }) => [
-    JSON.stringify({
-      timestamp: message.date.toISOString(),
-      level: message.level,
-      scope: message.scope,
-      message: message.data,
-    }),
-  ]
-
-  log.transports.file.maxSize = 5 * 1024 * 1024 // 5MB
-
-  // Console output in debug mode with readable format
-  // Note: format must return an array - electron-log's transformStyles calls .reduce() on it
   log.transports.console.format = ({ message }) => {
     const scope = message.scope ? `[${message.scope}]` : ''
     const level = message.level.toUpperCase().padEnd(5)
@@ -54,8 +51,6 @@ if (isDebugMode) {
   }
   log.transports.console.level = 'debug'
 } else {
-  // Disable file and console transports in production
-  log.transports.file.level = false
   log.transports.console.level = false
 }
 
@@ -69,10 +64,10 @@ export const searchLog = log.scope('search')
 
 /**
  * Get the path to the current log file.
- * Returns undefined if file logging is disabled.
+ * File logging is always on (debug-level in dev, info-level in packaged builds),
+ * so this returns the active log path in both runtimes.
  */
 export function getLogFilePath(): string | undefined {
-  if (!isDebugMode) return undefined
   return log.transports.file.getFile()?.path
 }
 
