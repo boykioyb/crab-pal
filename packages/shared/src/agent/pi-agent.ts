@@ -43,6 +43,7 @@ import { EventQueue } from './backend/event-queue.ts';
 
 // System prompt for CrabPal context
 import { getSystemPrompt } from '../prompts/system.ts';
+import { getCoAuthorPreference } from '../config/preferences.ts';
 
 // Credential manager for token storage
 import { getCredentialManager } from '../credentials/manager.ts';
@@ -153,6 +154,35 @@ export class PiAgent extends BaseAgent {
   private resetSubprocessErrorDedup(): void {
     this.lastSubprocessError = null;
     this.subprocessErrorRepeatCount = 0;
+  }
+
+  // Ring buffer of recent subprocess stderr. Always on (independent of debug flags)
+  // so that connection-test and other failures can surface what the subprocess
+  // actually said, instead of a bare "timed out" with no context (upstream v0.8.10).
+  private stderrBuffer: string[] = [];
+  private stderrBufferBytes = 0;
+  private static readonly STDERR_BUFFER_MAX_BYTES = 8 * 1024;
+
+  private recordStderr(chunk: string): void {
+    if (!chunk) return;
+    // If a single chunk is larger than the cap, keep only its tail so the
+    // buffer always holds the most-recent output even in pathological cases.
+    const effective = chunk.length > PiAgent.STDERR_BUFFER_MAX_BYTES
+      ? chunk.slice(chunk.length - PiAgent.STDERR_BUFFER_MAX_BYTES)
+      : chunk;
+    this.stderrBuffer.push(effective);
+    this.stderrBufferBytes += effective.length;
+    // Drop oldest chunks until we're back under the cap, but always keep at
+    // least one entry so a single-chunk tail survives.
+    while (this.stderrBufferBytes > PiAgent.STDERR_BUFFER_MAX_BYTES && this.stderrBuffer.length > 1) {
+      const dropped = this.stderrBuffer.shift()!;
+      this.stderrBufferBytes -= dropped.length;
+    }
+  }
+
+  /** Returns the most recent subprocess stderr output (up to ~8KB). Empty string if nothing captured. */
+  getRecentStderr(): string {
+    return this.stderrBuffer.join('');
   }
 
   // Pending permission requests (used by handlePreToolUseRequest for ask-mode prompting)
@@ -382,11 +412,15 @@ export class PiAgent extends BaseAgent {
       this.handleLine(line);
     });
 
-    // Forward stderr to debug log
+    // Always capture stderr into a bounded ring buffer so callers (e.g. the
+    // connection-test timeout path) can surface it on failure. Keep the
+    // debug log for interactive dev work.
     child.stderr?.on('data', (data: Buffer) => {
-      const text = data.toString().trim();
-      if (text) {
-        this.debug(`[subprocess stderr] ${text}`);
+      const text = data.toString();
+      this.recordStderr(text);
+      const trimmed = text.trim();
+      if (trimmed) {
+        this.debug(`[subprocess stderr] ${trimmed}`);
       }
     });
 
@@ -1763,7 +1797,8 @@ export class PiAgent extends BaseAgent {
         this.config.workspace.rootPath,
         this.config.session?.workingDirectory,
         this.config.systemPromptPreset,
-        'CrabPal Backend' // backendName
+        'CrabPal Backend', // backendName
+        getCoAuthorPreference(), // respect user's includeCoAuthoredBy preference (upstream #576)
       );
 
       // Build context from sources

@@ -14,7 +14,8 @@
  */
 
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { homedir } from 'node:os';
+import { isAbsolute, join, resolve } from 'node:path';
 
 import type { AgentEvent } from '@crabpal/core/types';
 import type { FileAttachment } from '../utils/files.ts';
@@ -135,6 +136,36 @@ export const MINI_AGENT_TOOLS = ['Read', 'Edit', 'Write', 'Glob', 'Grep', 'Bash'
 
 /** MCP servers for mini agents - minimal set (docs tools are now bundled in session) */
 export const MINI_AGENT_MCP_KEYS = ['session'] as const;
+
+/**
+ * Normalize a user-supplied `workingDirectory` for spawn_session.
+ *
+ * Expands leading `~`, `$HOME`, `${HOME}` to the home directory, resolves
+ * relative paths against `process.cwd()`, and returns undefined for missing
+ * or empty input. Fixes upstream #575 — previously these forms were passed
+ * literally to the child SDK, producing a misleading "cli.js not found".
+ */
+function normalizeWorkingDirectory(raw: string | undefined): string | undefined {
+  if (typeof raw !== 'string') return undefined;
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+
+  let expanded = trimmed
+    .replace(/^\$\{HOME\}(\/|$)/, homedir() + '$1')
+    .replace(/^\$HOME(\/|$)/, homedir() + '$1');
+
+  if (expanded === '~') {
+    expanded = homedir();
+  } else if (expanded.startsWith('~/')) {
+    expanded = join(homedir(), expanded.slice(2));
+  }
+
+  if (!isAbsolute(expanded)) {
+    expanded = resolve(process.cwd(), expanded);
+  }
+
+  return expanded;
+}
 
 // ============================================================
 // BaseAgent Abstract Class
@@ -1127,7 +1158,7 @@ ${formattedMessages}
       enabledSourceSlugs: input.enabledSourceSlugs as string[] | undefined,
       permissionMode: input.permissionMode as SpawnSessionRequest['permissionMode'],
       labels: input.labels as string[] | undefined,
-      workingDirectory: input.workingDirectory as string | undefined,
+      workingDirectory: normalizeWorkingDirectory(input.workingDirectory as string | undefined),
       attachments: input.attachments as SpawnSessionRequest['attachments'],
     };
 

@@ -357,6 +357,8 @@ export interface ResolvedLabelsResult {
   unknown: string[];
   /** All valid label IDs (for error messages) */
   available: string[];
+  /** Per-input explanation keyed by the original input string. */
+  reasons?: Record<string, string>;
 }
 
 /** Result of resolving a status name/ID against configured statuses. */

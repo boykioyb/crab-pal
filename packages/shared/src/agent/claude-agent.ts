@@ -1,4 +1,4 @@
-import { query, createSdkMcpServer, tool, AbortError, type Query, type SDKUserMessage, type SDKAssistantMessageError, type Options, type SDKResultSuccess, type SDKRateLimitInfo } from '@anthropic-ai/claude-agent-sdk';
+import { query, createSdkMcpServer, tool, AbortError, type Query, type SDKUserMessage, type SDKAssistantMessageError, type Options, type SDKRateLimitInfo } from '@anthropic-ai/claude-agent-sdk';
 import { getDefaultOptions, resetClaudeConfigCheck } from './options.ts';
 // Local type for SDK user message content blocks (text, image, document)
 // Replaces import from @anthropic-ai/sdk/resources — keeps SDK as agent-only dependency
@@ -26,6 +26,7 @@ import { getCredentialManager } from '../credentials/index.ts';
 import { loadPreferences, formatPreferencesForPrompt, getCoAuthorPreference } from '../config/preferences.ts';
 import type { FileAttachment } from '../utils/files.ts';
 import type { LLMQueryRequest, LLMQueryResult } from './llm-tool.ts';
+import { consumeLlmQueryMessages } from './claude-llm-query.ts';
 import { debug } from '../utils/debug.ts';
 import { guardLargeResult } from '../utils/large-response.ts';
 import {
@@ -668,6 +669,30 @@ export class ClaudeAgent extends BaseAgent {
     return { authInjected: true };
   }
 
+  // Re-resolve auth env vars before spawning a new SDK subprocess.
+  // Claude OAuth access tokens expire after ~8h; getValidClaudeOAuthToken has
+  // a 5-min buffer and per-connection mutex, so the fast path is free.
+  private async refreshAuthEnvVars(): Promise<void> {
+    const slug = this.config.connectionSlug;
+    if (!slug) return;
+
+    const connection = getLlmConnection(slug);
+    if (!connection) return;
+
+    const manager = getCredentialManager();
+    const result = await resolveAuthEnvVars(connection, slug, manager, getValidClaudeOAuthToken);
+
+    if (!result.success) {
+      debug(`[ClaudeAgent] refreshAuthEnvVars failed: ${result.warning}`);
+      return;
+    }
+
+    this.config.envOverrides = {
+      ...this.config.envOverrides,
+      ...result.envVars,
+    };
+  }
+
   // Config watcher methods (startConfigWatcher, stopConfigWatcher) are now inherited from BaseAgent
   // Thinking level methods (setThinkingLevel, getThinkingLevel) are inherited from BaseAgent
 
@@ -899,11 +924,14 @@ export class ClaudeAgent extends BaseAgent {
       // for OAuth the [1m] model suffix is the way. Use the suffix unconditionally
       // since it works for both auth paths. See: anthropics/claude-agent-sdk-typescript#238
       // Gated by enable1MContext in global config (~/.crabpal/config.json).
+      // Opt-in (default false) — the 1M beta requires Anthropic Tier 4+ (upstream #567).
       // The interceptor also reads this to strip the SDK-injected beta header.
-      const use1M = this.config.enable1MContext !== false;
+      const use1M = this.config.enable1MContext === true;
       const effectiveModel = use1M && getModelContextWindow(model) === 1_000_000
         ? `${model}[1m]`
         : model;
+
+      await this.refreshAuthEnvVars();
 
       const options: Options = {
         ...getDefaultOptions(this.config.envOverrides),
@@ -2609,6 +2637,8 @@ This is a branched conversation. All prior messages in this conversation are par
     }
     const model = this.config.miniModel;
 
+    await this.refreshAuthEnvVars();
+
     const options = {
       ...getDefaultOptions(this.config.envOverrides),
       model,
@@ -2655,10 +2685,15 @@ This is a branched conversation. All prior messages in this conversation are par
   async queryLlm(request: LLMQueryRequest): Promise<LLMQueryResult> {
     const model = request.model ?? this.config.miniModel ?? getDefaultSummarizationModel();
 
+    await this.refreshAuthEnvVars();
+
     const options = {
       ...getDefaultOptions(this.config.envOverrides),
       model,
-      maxTurns: 1,
+      // Reasoning-model outputs (Opus 4.7 extended thinking) can span multiple
+      // SDK-counted turns even with no tools exposed. Tool surface here is
+      // empty, so no tool-use loop risk. (upstream #544)
+      maxTurns: 10,
       systemPrompt: request.systemPrompt ?? 'Reply with ONLY the requested text. No explanation.',
       ...(request.maxTokens ? { maxTokens: request.maxTokens } : {}),
       ...(request.temperature !== undefined ? { temperature: request.temperature } : {}),
@@ -2667,28 +2702,10 @@ This is a branched conversation. All prior messages in this conversation are par
       } : {}),
     };
 
-    let result = '';
-    let structuredOutput: unknown = undefined;
-
-    for await (const msg of query({ prompt: request.prompt, options })) {
-      if (msg.type === 'assistant') {
-        for (const block of msg.message.content) {
-          if (block.type === 'text') {
-            result += block.text;
-          }
-        }
-      }
-      // Extract structured output from SDK result message
-      if (msg.type === 'result' && (msg as SDKResultSuccess).subtype === 'success') {
-        structuredOutput = (msg as SDKResultSuccess).structured_output;
-      }
-    }
-
-    // Prefer structured output when available
-    if (structuredOutput !== undefined) {
-      return { text: JSON.stringify(structuredOutput, null, 2) };
-    }
-    return { text: result.trim() };
+    return consumeLlmQueryMessages(
+      query({ prompt: request.prompt, options }),
+      (msg) => this.debug(msg),
+    );
   }
 
   // ============================================================

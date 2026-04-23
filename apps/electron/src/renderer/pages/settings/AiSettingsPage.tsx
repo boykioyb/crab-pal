@@ -572,7 +572,7 @@ export default function AiSettingsPage() {
   // Default settings state (app-level)
   const [defaultThinking, setDefaultThinking] = useState<ThinkingLevel>(DEFAULT_THINKING_LEVEL)
   const [extendedPromptCache, setExtendedPromptCache] = useState(false)
-  const [enable1MContext, setEnable1MContext] = useState(true)
+  const [enable1MContext, setEnable1MContext] = useState(false)
 
   // Validation state per connection
   const [validationStates, setValidationStates] = useState<Record<string, {
@@ -998,7 +998,7 @@ export default function AiSettingsPage() {
                 <SettingsCard>
                   <SettingsToggle
                     label="Extended Context (1M)"
-                    description="Use 1M token context window for Opus 4.6. Disable to use 200K and conserve usage limits."
+                    description="Use 1M token context window for Opus 4.6/4.7. Off by default — the 1M beta requires Anthropic Tier 4+; enabling it on lower-tier keys causes 400 Invalid Request errors on large contexts."
                     checked={enable1MContext}
                     onCheckedChange={handleEnable1MContextChange}
                   />

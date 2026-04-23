@@ -11,13 +11,15 @@ import type { ThinkingLevel } from '../../thinking-levels.ts';
 /**
  * Map thinking levels to Pi thinking levels.
  * Pi supports: "off" | "minimal" | "low" | "medium" | "high" | "xhigh"
- * CrabPal supports: "off" | "low" | "medium" | "high" | "max"
+ * CrabPal supports: "off" | "low" | "medium" | "high" | "xhigh" | "max"
+ * Pi's ceiling is `xhigh`, so CrabPal's `max` saturates there.
  */
 export const THINKING_TO_PI: Record<ThinkingLevel, PiThinkingLevel> = {
   off: 'off',
   low: 'low',
   medium: 'medium',
   high: 'high',
+  xhigh: 'xhigh',
   max: 'xhigh',
 };
 

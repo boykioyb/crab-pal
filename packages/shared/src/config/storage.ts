@@ -75,7 +75,7 @@ export interface StoredConfig {
   browserToolEnabled?: boolean;  // Enable built-in browser tool (default: true). Disable for Playwright/Puppeteer.
   // Prompt caching & context
   extendedPromptCache?: boolean;  // Use 1h prompt cache TTL instead of 5m (default: false)
-  enable1MContext?: boolean;  // Enable 1M context window for supported models (default: true)
+  enable1MContext?: boolean;  // Enable 1M context window for supported models (default: false — opt-in; requires Anthropic Tier 4+)
   // Network proxy
   networkProxy?: import('./types.ts').NetworkProxySettings;
   // Windows: path to Git Bash (bash.exe) for the SDK subprocess
@@ -489,11 +489,13 @@ export function setBrowserToolEnabled(enabled: boolean): void {
 /**
  * Get whether 1M context window is enabled.
  * When disabled, models use 200K context and the interceptor strips the context-1m beta header.
- * Defaults to true if not set.
+ * Defaults to false — the 1M beta requires Anthropic Tier 4+, and enabling it by default
+ * causes 400 "Invalid Request" for lower-tier API keys on large contexts (upstream #567).
+ * Users opt in via AI Settings → Performance → Extended Context (1M).
  */
 export function getEnable1MContext(): boolean {
   const config = loadStoredConfig();
-  return config?.enable1MContext !== false;
+  return config?.enable1MContext === true;
 }
 
 /**
