@@ -669,6 +669,30 @@ export class ClaudeAgent extends BaseAgent {
     return { authInjected: true };
   }
 
+  // Re-resolve auth env vars before spawning a new SDK subprocess.
+  // Claude OAuth access tokens expire after ~8h; getValidClaudeOAuthToken has
+  // a 5-min buffer and per-connection mutex, so the fast path is free.
+  private async refreshAuthEnvVars(): Promise<void> {
+    const slug = this.config.connectionSlug;
+    if (!slug) return;
+
+    const connection = getLlmConnection(slug);
+    if (!connection) return;
+
+    const manager = getCredentialManager();
+    const result = await resolveAuthEnvVars(connection, slug, manager, getValidClaudeOAuthToken);
+
+    if (!result.success) {
+      debug(`[ClaudeAgent] refreshAuthEnvVars failed: ${result.warning}`);
+      return;
+    }
+
+    this.config.envOverrides = {
+      ...this.config.envOverrides,
+      ...result.envVars,
+    };
+  }
+
   // Config watcher methods (startConfigWatcher, stopConfigWatcher) are now inherited from BaseAgent
   // Thinking level methods (setThinkingLevel, getThinkingLevel) are inherited from BaseAgent
 
@@ -906,6 +930,8 @@ export class ClaudeAgent extends BaseAgent {
       const effectiveModel = use1M && getModelContextWindow(model) === 1_000_000
         ? `${model}[1m]`
         : model;
+
+      await this.refreshAuthEnvVars();
 
       const options: Options = {
         ...getDefaultOptions(this.config.envOverrides),
@@ -2611,6 +2637,8 @@ This is a branched conversation. All prior messages in this conversation are par
     }
     const model = this.config.miniModel;
 
+    await this.refreshAuthEnvVars();
+
     const options = {
       ...getDefaultOptions(this.config.envOverrides),
       model,
@@ -2656,6 +2684,8 @@ This is a branched conversation. All prior messages in this conversation are par
 
   async queryLlm(request: LLMQueryRequest): Promise<LLMQueryResult> {
     const model = request.model ?? this.config.miniModel ?? getDefaultSummarizationModel();
+
+    await this.refreshAuthEnvVars();
 
     const options = {
       ...getDefaultOptions(this.config.envOverrides),
